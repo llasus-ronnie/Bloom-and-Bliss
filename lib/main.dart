@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:bloom_and_bliss/sidenav.dart';
 
 void main() {
   runApp(const MyApp());
@@ -7,7 +8,6 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     const String apptitle = "Flower Shop";
@@ -30,6 +30,7 @@ class MyApp extends StatelessWidget {
             elevation: 0,
           ),
         ),
+        drawer: Sidenav(),
         body: SingleChildScrollView(
           child: Column(
               children: [
@@ -38,103 +39,6 @@ class MyApp extends StatelessWidget {
               ]
           ),
         ),
-        drawer: Drawer (
-          child: ListView(
-            children: [
-              DrwHeader(),
-              DrwListView()
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class DrwHeader extends StatefulWidget {
-  @override
-  _Drwheader createState() => _Drwheader();
-}
-class _Drwheader extends State<DrwHeader> {
-  @override
-  Widget build(BuildContext context) {
-    return DrawerHeader(
-      decoration: BoxDecoration(color: Colors.grey),
-      child: Stack(
-        children: [
-          Positioned(
-            top: 0,
-            right: 0,
-            child: IconButton(
-              icon: Icon(Icons.close, color: Colors.white),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ),
-          Align(
-            alignment: Alignment.center,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircleAvatar(
-                  backgroundImage: AssetImage('assets/id-icon.jpg'),
-                  radius: 40,
-                ),
-                SizedBox(height: 10),
-                Text(
-                  "Guest User",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-class DrwListView extends StatefulWidget {
-  @override
-  _DrwListView createState() => _DrwListView();
-}
-class _DrwListView extends State<DrwListView> {
-  @override
-  Widget build(BuildContext context) {
-    return Padding(padding: EdgeInsets.all(10),
-      child: Column(
-        children: [
-          ListTile(
-            title: Text("Home"),
-            leading: Icon(Icons.home),
-            onTap: null,
-            // onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => main_page())),
-          ),
-          ListTile(
-            title: Text("Sign Up"),
-            leading: Icon(Icons.person),
-            onTap: null,
-          ),
-          ListTile(
-            title: Text("Your Cart"),
-            leading: Icon(Icons.shopping_cart),
-            onTap: null,
-          ),
-          ListTile(
-            title: Text("Our Flowers"),
-            leading: Icon(Icons.local_florist),
-            onTap: null,
-          ),
-          ListTile(
-            title: Text("Shop Catalogue"),
-            leading: Icon(Icons.apps),
-            onTap: null,
-          ),
-        ],
       ),
     );
   }
@@ -149,7 +53,7 @@ class TextTitleSection extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-              Text("Welcome to our Flower Shop!",
+              Text("Flower Shop Home Page",
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
