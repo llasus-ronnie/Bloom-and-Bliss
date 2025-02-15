@@ -10,116 +10,164 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    const String apptitle = "Flower Shop";
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+      title: apptitle,
+      home: Scaffold(
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(50),
+          child: AppBar(
+            centerTitle: true,
+            flexibleSpace: Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("assets/flowers-header.jpg"),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+          ),
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+              children: [
+                TextTitleSection(),
+                BodySection()
+              ]
+          ),
+        ),
+        drawer: Drawer (
+          child: ListView(
+            children: [
+              DrwHeader(),
+              DrwListView()
+            ],
+          ),
+        ),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
+class DrwHeader extends StatefulWidget {
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  _Drwheader createState() => _Drwheader();
+}
+class _Drwheader extends State<DrwHeader> {
+  @override
+  Widget build(BuildContext context) {
+    return DrawerHeader(
+      decoration: BoxDecoration(
+          color: Colors.grey
+      ),
+      child: Column(
+        children: [
+          SizedBox(height: 10),
+          CircleAvatar(
+            backgroundImage: AssetImage('assets/id-icon.jpg'),
+            radius: 40,
+          ),
+          SizedBox(height: 10),
+          Text(
+              "Guest User",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold
+              )
+          ),
+        ],
+      ),
+    );
+  }
+}
+class DrwListView extends StatefulWidget {
+  @override
+  _DrwListView createState() => _DrwListView();
+}
+class _DrwListView extends State<DrwListView> {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(padding: EdgeInsets.all(10),
+      child: Column(
+        children: [
+          ListTile(
+            title: Text("Home"),
+            leading: Icon(Icons.home),
+            onTap: null,
+            // onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => main_page())),
+          ),
+          ListTile(
+            title: Text("Sign Up"),
+            leading: Icon(Icons.person),
+            onTap: null,
+          ),
+          ListTile(
+            title: Text("Your Cart"),
+            leading: Icon(Icons.shopping_cart),
+            onTap: null,
+          ),
+          ListTile(
+            title: Text("Our Flowers"),
+            leading: Icon(Icons.local_florist),
+            onTap: null,
+          ),
+          ListTile(
+            title: Text("Shop Catalogue"),
+            leading: Icon(Icons.apps),
+            onTap: null,
+          ),
+        ],
+      ),
+    );
+  }
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
+class TextTitleSection extends StatelessWidget {
+  const TextTitleSection({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
+    return Padding(padding: EdgeInsets.only(top: 70),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+              Text("Welcome to our Flower Shop!",
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black
+                ),
+              ),
+            ],
         ),
+    );
+  }
+}
+
+class BodySection extends StatelessWidget {
+  const BodySection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.all(50),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "At our Flower Shop, we believe that every flower tells a story. Whether you're celebrating a special occasion, expressing love and gratitude, or simply brightening someone’s day, our carefully curated blooms are here to make every moment more beautiful. Explore our collection of fresh, hand-picked flowers arranged with love and care. From classic roses to vibrant sunflowers, elegant lilies, and delicate tulips, we have the perfect arrangement for any occasion. Let us help you share joy, warmth, and affection—one petal at a time. We're delighted to help make your special moments even more memorable!",
+            textAlign: TextAlign.justify,
+            style: TextStyle(
+                fontSize: 18,
+                color: Colors.black
+            ),
+          ),
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
