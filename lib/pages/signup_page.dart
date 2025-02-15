@@ -7,14 +7,12 @@ void main() {
 }
 
 class SignUpPage extends StatelessWidget {
-  const SignUpPage ({super.key});
+  const SignUpPage({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    const String apptitle = "Flower Shop";
     return MaterialApp(
-      title: apptitle,
+      title: "Flower Shop - Sign Up",
       home: Scaffold(
         appBar: PreferredSize(
           preferredSize: Size.fromHeight(50),
@@ -34,11 +32,25 @@ class SignUpPage extends StatelessWidget {
         ),
         drawer: Sidenav(),
         body: SingleChildScrollView(
-          child: Column(
+          child: Padding(
+            padding: EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                TextTitleSection(),
-                ButtonFieldSection()
-              ]
+                Center(
+                  child: Text(
+                    "Create an Account",
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20),
+                SignUpForm(),
+              ],
+            ),
           ),
         ),
       ),
@@ -46,44 +58,75 @@ class SignUpPage extends StatelessWidget {
   }
 }
 
-class TextTitleSection extends StatelessWidget {
-  const TextTitleSection({super.key});
+class SignUpForm extends StatefulWidget {
+  const SignUpForm({super.key});
+
+  @override
+  _SignUpFormState createState() => _SignUpFormState();
+}
+
+class _SignUpFormState extends State<SignUpForm> {
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
-    return Padding(padding: EdgeInsets.only(top: 70),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Sign Up Page",
-            style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.black
-            ),
+          buildTextField("Full Name", Icons.person),
+          buildTextField("Email", Icons.email),
+          buildTextField("Phone Number", Icons.phone),
+          buildTextField("Password", Icons.lock, obscureText: true),
+          buildTextField("Confirm Password", Icons.lock, obscureText: true),
+          SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () => Navigator.push(
+                      context, MaterialPageRoute(builder: (context) => MyApp())),
+                  child: Text("Back"),
+                ),
+              ),
+              SizedBox(width: 10),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      // Process sign-up
+                    }
+                  },
+                  child: Text("Sign Up"),
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
-}
 
-class ButtonFieldSection extends StatelessWidget{
-  const ButtonFieldSection({super.key});
-
-  @override
-  Widget build(BuildContext context){
-    return Padding(padding: EdgeInsets.all(30),
-      child: Row(
-        spacing: 10,
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          Expanded(child:
-          ElevatedButton(
-              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => MyApp())),
-              child: Text("Back"))
+  Widget buildTextField(String labelText, IconData icon, {bool obscureText = false}) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 15),
+      child: TextFormField(
+        obscureText: obscureText,
+        decoration: InputDecoration(
+          labelText: labelText,
+          prefixIcon: Icon(icon),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
           ),
-        ],
+        ),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return "$labelText is required";
+          }
+          return null;
+        },
       ),
     );
   }
