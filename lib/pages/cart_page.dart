@@ -7,9 +7,8 @@ void main() {
 }
 
 class CartPage extends StatelessWidget {
-  const CartPage ({super.key});
+  const CartPage({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     const String apptitle = "Flower Shop";
@@ -35,10 +34,11 @@ class CartPage extends StatelessWidget {
         drawer: Sidenav(),
         body: SingleChildScrollView(
           child: Column(
-              children: [
-                TextTitleSection(),
-                ButtonFieldSection()
-              ]
+            children: [
+              TextTitleSection(),
+              ImageInputSection(),
+              ButtonFieldSection(),
+            ],
           ),
         ),
       ),
@@ -51,15 +51,17 @@ class TextTitleSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(padding: EdgeInsets.only(top: 70),
+    return Padding(
+      padding: EdgeInsets.only(top: 70),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text("Your Cart Page",
+          Text(
+            "Your Cart Page",
             style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.black
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
             ),
           ),
         ],
@@ -68,23 +70,112 @@ class TextTitleSection extends StatelessWidget {
   }
 }
 
-class ButtonFieldSection extends StatelessWidget{
-  const ButtonFieldSection({super.key});
+class ImageInputSection extends StatelessWidget {
+  const ImageInputSection({super.key});
 
   @override
-  Widget build(BuildContext context){
-    return Padding(padding: EdgeInsets.all(30),
-      child: Row(
-        spacing: 10,
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.all(20),
+      child: Column(
         children: [
-          Expanded(child:
-          ElevatedButton(
-              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => MyApp())),
-              child: Text("Back"))
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 400,
+                height: 400,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(Icons.image, size: 80, color: Colors.grey[600]),
+              ),
+              SizedBox(width: 15),
+              Container(
+                width: 400,
+                height: 400,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(Icons.image, size: 80, color: Colors.grey[600]),
+              ),
+            ],
+          ),
+          SizedBox(height: 20),
+          Container(
+            width: 800,
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: "Enter details...",
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ),
+          SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 390,
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: "Additional Input 1",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
+              SizedBox(width: 20),
+              Container(
+                width: 390,
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: "Additional Input 2",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 180,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: () {
+                  },
+                  child: Text("Submit", style: TextStyle(fontSize: 18)),
+                ),
+              ),
+              SizedBox(width: 10),
+              SizedBox(
+                width: 180,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => MyApp()),
+                  ),
+                  child: Text("Back", style: TextStyle(fontSize: 18)),
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
+  }
+}
+
+class ButtonFieldSection extends StatelessWidget {
+  const ButtonFieldSection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox.shrink();
   }
 }
