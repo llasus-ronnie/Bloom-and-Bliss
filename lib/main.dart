@@ -59,24 +59,39 @@ class _Drwheader extends State<DrwHeader> {
   @override
   Widget build(BuildContext context) {
     return DrawerHeader(
-      decoration: BoxDecoration(
-          color: Colors.grey
-      ),
-      child: Column(
+      decoration: BoxDecoration(color: Colors.grey),
+      child: Stack(
         children: [
-          SizedBox(height: 10),
-          CircleAvatar(
-            backgroundImage: AssetImage('assets/id-icon.jpg'),
-            radius: 40,
+          Positioned(
+            top: 0,
+            right: 0,
+            child: IconButton(
+              icon: Icon(Icons.close, color: Colors.white),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
           ),
-          SizedBox(height: 10),
-          Text(
-              "Guest User",
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold
-              )
+          Align(
+            alignment: Alignment.center,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircleAvatar(
+                  backgroundImage: AssetImage('assets/id-icon.jpg'),
+                  radius: 40,
+                ),
+                SizedBox(height: 10),
+                Text(
+                  "Guest User",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
