@@ -37,6 +37,7 @@ class DetailsPage extends StatelessWidget {
           child: Column(
               children: [
                 TextTitleSection(),
+                BodySection(),
                 ButtonFieldSection()
               ]
           ),
@@ -61,6 +62,47 @@ class TextTitleSection extends StatelessWidget {
                 fontWeight: FontWeight.bold,
                 color: Colors.black
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class BodySection extends StatelessWidget {
+  const BodySection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.all(20),
+      child: Column(
+        children: [
+          Center(
+            child: Icon(
+              Icons.local_florist, // Flower icon
+              size: 200,
+              color: Colors.red,
+            ),
+          ),
+          SizedBox(height: 20),
+          Text(
+            "Beautiful Red Rose",
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 10),
+          Text(
+            "This vibrant red rose symbolizes love and passion. Perfect for any occasion!",
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.grey[700],
+            ),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
