@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:bloom_and_bliss/sidenav.dart';
 
+import 'constants/colors.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -15,28 +17,34 @@ class MyApp extends StatelessWidget {
       title: apptitle,
       home: Scaffold(
         appBar: PreferredSize(
-          preferredSize: Size.fromHeight(50),
+          preferredSize: Size.fromHeight(80),
           child: AppBar(
+            backgroundColor: AppColors.beige,
             centerTitle: true,
-            flexibleSpace: Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage("assets/flowers-header.jpg"),
-                  fit: BoxFit.cover,
-                ),
+            flexibleSpace: Center(
+              child: Padding(
+                padding: EdgeInsets.only(top: 10, bottom: 5),
+                child: Image.asset("assets/bnb-logo.png", height: 70),
               ),
             ),
-            backgroundColor: Colors.transparent,
-            elevation: 0,
+            iconTheme: IconThemeData(
+              color: AppColors.pink
+            ),
           ),
         ),
         drawer: Sidenav(),
         body: SingleChildScrollView(
-          child: Column(
+          child: Container(
+            height: MediaQuery.of(context).size.height - 100,
+            alignment: Alignment.center,
+            color: AppColors.beige,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 TextTitleSection(),
-                BodySection()
-              ]
+                BodySection(),
+              ],
+            ),
           ),
         ),
       ),
