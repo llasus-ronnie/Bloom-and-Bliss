@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:bloom_and_bliss/sidenav.dart';
 import 'constants/colors.dart';
+import 'package:bloom_and_bliss/pages/cart_page.dart';
+import 'package:bloom_and_bliss/pages/details_page.dart';
+import 'package:bloom_and_bliss/pages/catalogue_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -35,7 +38,7 @@ class MyApp extends StatelessWidget {
           child: Column(
             children: [
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.5,
+                height: MediaQuery.of(context).size.height * 0.9,
                 child: ImageCarousel(),
               ),
               Container(
@@ -47,6 +50,7 @@ class MyApp extends StatelessWidget {
                   children: [
                     TextTitleSection(),
                     BodySection(),
+                    ButtonRow(),
                   ],
                 ),
               ),
@@ -66,8 +70,8 @@ class ImageCarousel extends StatefulWidget {
 class _ImageCarouselState extends State<ImageCarousel> {
   final PageController _pageController = PageController();
   final List<String> images = [
-    "assets/image1.jpg",
     "assets/image2.jpg",
+    "assets/image1.jpg",
     "assets/image3.jpg",
   ];
   int currentIndex = 0;
@@ -93,10 +97,8 @@ class _ImageCarouselState extends State<ImageCarousel> {
             );
           },
         ),
-        Positioned(
-          top: 100,
-          left: 0,
-          right: 0,
+
+        Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -106,14 +108,15 @@ class _ImageCarouselState extends State<ImageCarousel> {
                   "Bloom & Bliss",
                   textAlign: TextAlign.center,
                   style: const TextStyle(
-                    fontSize: 40,
+                    fontSize: 44,
                     fontWeight: FontWeight.bold,
+                    fontFamily: 'Recoleta',
                     color: Colors.white,
                     shadows: <Shadow>[
                       Shadow(
                         offset: Offset(1.0, 1.0),
                         blurRadius: 3.0,
-                        color: Color.fromARGB(64, 0, 0, 0),
+                        color: Color.fromARGB(200, 0, 0, 0),
                       ),
                     ],
                   ),
@@ -121,16 +124,17 @@ class _ImageCarouselState extends State<ImageCarousel> {
               ),
               const SizedBox(height: 2),
               const Text(
-                "Happiness Blossoms Here",
+                "Happiness in Every Petal",
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 22,
+                  fontFamily: 'PTSerif',
                   color: Colors.white,
                   shadows: <Shadow>[
                     Shadow(
                       offset: Offset(1.0, 1.0),
                       blurRadius: 3.0,
-                      color: Color.fromARGB(64, 0, 0, 0),
+                      color: Color.fromARGB(255, 0, 0, 0),
                     ),
                   ],
                 ),
@@ -138,6 +142,7 @@ class _ImageCarouselState extends State<ImageCarousel> {
             ],
           ),
         ),
+
         Positioned(
           bottom: 20,
           child: Row(
@@ -160,7 +165,7 @@ class _ImageCarouselState extends State<ImageCarousel> {
                   height: 10.0,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: currentIndex == index ? AppColors.pink : Colors.grey,
+                    color: currentIndex == index ? AppColors.pink : Colors.white,
                   ),
                 ),
               );
@@ -184,8 +189,8 @@ class TextTitleSection extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.black,
-                  fontFamily: 'PTSerif'
+                  color: AppColors.beige,
+                  fontFamily: 'Recoleta'
                 ),
               ),
             ],
@@ -200,7 +205,7 @@ class BodySection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(50),
+      padding: EdgeInsets.all(40),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -215,6 +220,59 @@ class BodySection extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class ButtonRow extends StatelessWidget {
+  const ButtonRow({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Expanded(child: _buildButton(context, Icons.storefront, "Shop Now", const CataloguePage())),
+          const SizedBox(width: 10),
+          Expanded(child: _buildButton(context, Icons.local_florist, "Our Flowers", const DetailsPage())),
+          const SizedBox(width: 10),
+          Expanded(child: _buildButton(context, Icons.shopping_cart, "Your Cart", const CartPage())),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildButton(BuildContext context, IconData icon, String label, Widget page) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => page));
+      },
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: AppColors.beige,
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 50, color: AppColors.pink),
+            const SizedBox(height: 5),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: AppColors.pink,
+                fontSize: 14,
+                fontFamily: 'Recoleta',
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

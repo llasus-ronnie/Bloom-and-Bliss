@@ -94,6 +94,11 @@ flutter:
       fonts:
         - asset: assets/fonts/BreeSerif-Regular.ttf
 
+    - family: Recoleta
+      fonts:
+        - asset: assets/fonts/Recoleta-Regular.ttf
+        - asset: assets/fonts/Recoleta-SemiBold.ttf
+
   #   - family: Trajan Pro
   #     fonts:
   #       - asset: fonts/TrajanPro.ttf
