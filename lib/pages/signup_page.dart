@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:bloom_and_bliss/sidenav.dart';
 import 'package:bloom_and_bliss/main.dart';
 
 void main() {
@@ -14,44 +13,49 @@ class SignUpPage extends StatelessWidget {
     return MaterialApp(
       title: "Flower Shop - Sign Up",
       home: Scaffold(
-        appBar: PreferredSize(
-          preferredSize: Size.fromHeight(50),
-          child: AppBar(
-            centerTitle: true,
-            flexibleSpace: Container(
-              decoration: BoxDecoration(
+        body: Stack(
+          children: [
+            Container(
+              decoration: const BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage("assets/flowers-header.jpg"),
+                  image: AssetImage("assets/flowers-bg.jpg"),
                   fit: BoxFit.cover,
                 ),
               ),
             ),
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-          ),
-        ),
-        drawer: Sidenav(),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Text(
-                    "Create an Account",
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+            Center(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    elevation: 8,
+                    color: Colors.white.withOpacity(0.9),
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text(
+                            "Create an Account",
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          const SignUpForm(),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
-                SignUpForm(),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
@@ -73,25 +77,30 @@ class _SignUpFormState extends State<SignUpForm> {
     return Form(
       key: _formKey,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           buildTextField("Full Name", Icons.person),
           buildTextField("Email", Icons.email),
           buildTextField("Phone Number", Icons.phone),
           buildTextField("Password", Icons.lock, obscureText: true),
           buildTextField("Confirm Password", Icons.lock, obscureText: true),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
                 child: ElevatedButton(
                   onPressed: () => Navigator.push(
                       context, MaterialPageRoute(builder: (context) => MyApp())),
-                  child: Text("Back"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.grey[400],
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: const Text("Back", style: TextStyle(color: Colors.white)),
                 ),
               ),
-              SizedBox(width: 10),
+              const SizedBox(width: 10),
               Expanded(
                 child: ElevatedButton(
                   onPressed: () {
@@ -99,7 +108,13 @@ class _SignUpFormState extends State<SignUpForm> {
                       // Process sign-up
                     }
                   },
-                  child: Text("Sign Up"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.pink[300],
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: const Text("Sign Up", style: TextStyle(color: Colors.white)),
                 ),
               ),
             ],
@@ -111,14 +126,17 @@ class _SignUpFormState extends State<SignUpForm> {
 
   Widget buildTextField(String labelText, IconData icon, {bool obscureText = false}) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 15),
+      padding: const EdgeInsets.only(bottom: 15),
       child: TextFormField(
         obscureText: obscureText,
         decoration: InputDecoration(
+          filled: true,
+          fillColor: Colors.white,
           labelText: labelText,
-          prefixIcon: Icon(icon),
+          prefixIcon: Icon(icon, color: Colors.pink[300]),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide.none,
           ),
         ),
         validator: (value) {
