@@ -63,6 +63,8 @@ flutter:
     - assets/flowers-header.jpg
     - assets/bnb-logo.png
     - assets/guest-icon.png
+    - assets/flower-placeholder1.png
+    - assets/flower-placeholder2.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
