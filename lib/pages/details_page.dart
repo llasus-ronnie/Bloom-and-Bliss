@@ -59,7 +59,8 @@ class TextTitleSection extends StatelessWidget {
             style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Colors.black
+                color: Colors.black,
+                fontFamily: 'PTSerif'
             ),
           ),
         ],
