@@ -184,7 +184,7 @@ class TextTitleSection extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  color: AppColors.black,
                   fontFamily: 'PTSerif'
                 ),
               ),
@@ -210,7 +210,7 @@ class BodySection extends StatelessWidget {
             textAlign: TextAlign.justify,
             style: TextStyle(
                 fontSize: 18,
-                color: Colors.black,
+                color: AppColors.black,
                 fontFamily: 'PTSerif'
             ),
           ),
