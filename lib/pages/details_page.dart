@@ -3,6 +3,7 @@ import 'package:bloom_and_bliss/sidenav.dart';
 import 'package:bloom_and_bliss/main.dart';
 import 'package:bloom_and_bliss/constants/colors.dart';
 
+
 void main() {
   runApp(const DetailsPage());
 }
@@ -12,33 +13,39 @@ class DetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const String apptitle = "Flower Shop";
     return MaterialApp(
-      title: "Flower Shop",
+      title: apptitle,
       home: Scaffold(
-        backgroundColor: AppColors.beige,
         appBar: PreferredSize(
-          preferredSize: Size.fromHeight(50),
+          preferredSize: Size.fromHeight(80),
           child: AppBar(
+            backgroundColor: AppColors.beige,
             centerTitle: true,
-            flexibleSpace: Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage("assets/flowers-header.jpg"),
-                  fit: BoxFit.cover,
-                ),
+            flexibleSpace: Center(
+              child: Padding(
+                padding: EdgeInsets.only(top: 10, bottom: 5),
+                child: Image.asset("assets/bnb-logo.png", height: 70),
               ),
             ),
-            elevation: 0,
+            iconTheme: IconThemeData(
+                color: AppColors.pink
+            ),
           ),
         ),
         drawer: Sidenav(),
         body: SingleChildScrollView(
-          child: Column(
-            children: [
-              TextTitleSection(),
-              BodySection(),
-              ButtonFieldSection(),
-            ],
+          child: Container(
+            height: MediaQuery.of(context).size.height - 100,
+            alignment: Alignment.center,
+            color: AppColors.beige,
+            child: Column(
+              children: [
+                TextTitleSection(),
+                BodySection(),
+                ButtonFieldSection()
+              ],
+            ),
           ),
         ),
       ),
@@ -53,83 +60,184 @@ class TextTitleSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(top: 50),
-      child: Text(
-        "Our Flowers",
-        style: TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-          color: Colors.black,
-          fontFamily: 'PTSerif'
-        ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            "Our Flowers",
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+              fontFamily: 'PTSerif',
+            ),
+          ),
+          SizedBox(height: 8), // Adds spacing between the title and subtext
+          Text(
+            "Discover a variety of fresh and beautiful flowers for every occasion.",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.black54,
+              fontFamily: 'PTSerif',
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class BodySection extends StatelessWidget {
+class BodySection extends StatefulWidget {
   const BodySection({super.key});
 
   @override
+  _BodySectionState createState() => _BodySectionState();
+}
+
+class _BodySectionState extends State<BodySection> {
+  final PageController _pageController = PageController(viewportFraction: 0.9);
+  int currentIndex = 0;
+
+  final List<Map<String, String>> flowers = [
+    {
+      "image": "assets/sample-flower.jpg",
+      "name": "Beautiful Red Rose",
+      "description": "This vibrant red rose symbolizes love and passion.",
+      "price": "\₱550.00",
+      "availability": "In Stock"
+    },
+    {
+      "image": "assets/sample-flower2.jpg",
+      "name": "Elegant White Lily",
+      "description": "A graceful white lily that represents purity.",
+      "price": "\₱670.00",
+      "availability": "In Stock"
+    },
+    {
+      "image": "assets/sample-flower3.jpg",
+      "name": "Charming Sunflower",
+      "description": "Bright and cheerful sunflowers to bring joy to any space!",
+      "price": "\₱450.00",
+      "availability": "Limited Stock"
+    }
+  ];
+
+  void _nextFlower() {
+    if (currentIndex < flowers.length - 1) {
+      setState(() {
+        currentIndex++;
+      });
+      _pageController.animateToPage(currentIndex, duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
+    }
+  }
+
+  void _previousFlower() {
+    if (currentIndex > 0) {
+      setState(() {
+        currentIndex--;
+      });
+      _pageController.animateToPage(currentIndex, duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.all(20),
-      child: Column(
-        children: [
-          Center(
-            child: Container(
-              width: 200,
-              height: 200,
-              decoration: BoxDecoration(
-                border: Border.all(color: AppColors.pink, width: 10),
-                borderRadius: BorderRadius.circular(20),
-                image: DecorationImage(
-                  image: AssetImage('assets/sample-flower.jpg'),
-                  fit: BoxFit.cover,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(
+          height: 450,
+          child: PageView.builder(
+            controller: _pageController,
+            itemCount: flowers.length,
+            physics: NeverScrollableScrollPhysics(),
+            itemBuilder: (context, index) {
+              final flower = flowers[index];
+              return Padding(
+                padding: EdgeInsets.only(top: 20),
+                child: SizedBox(
+                  height: 450,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 250,
+                        height: 250,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: AppColors.pink, width: 10),
+                          borderRadius: BorderRadius.circular(20),
+                          image: DecorationImage(
+                            image: AssetImage(flower["image"]!),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 15),
+                      Text(
+                        flower["name"]!,
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'PTSerif',
+                          color: Colors.black,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        flower["description"]!,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.black54,
+                          fontFamily: 'PTSerif',
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        "Price: ${flower["price"]!}",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.green,
+                          fontFamily: 'PTSerif',
+                        ),
+                      ),
+                      Text(
+                        "Availability: ${flower["availability"]!}",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: AppColors.black,
+                          fontFamily: 'PTSerif',
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ),
+              );
+            },
           ),
-          SizedBox(height: 20),
-          Text(
-            "Beautiful Red Rose",
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-              fontFamily: 'PTSerif'
+        ),
+        SizedBox(height: 20),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: _previousFlower,
+              style: ElevatedButton.styleFrom(backgroundColor: AppColors.pink),
+              child: Text("Previous", style: TextStyle(fontFamily: 'PTSerif', color: Colors.white)),
             ),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 10),
-          Text(
-            "This vibrant red rose symbolizes love and passion. Perfect for any occasion!",
-            style: TextStyle(
-              fontSize: 16,
-              color: AppColors.black,
-              fontFamily: 'PTSerif'
+            SizedBox(width: 20),
+            ElevatedButton(
+              onPressed: _nextFlower,
+              style: ElevatedButton.styleFrom(backgroundColor: AppColors.pink),
+              child: Text("Next", style: TextStyle(fontFamily: 'PTSerif', color: Colors.white)),
             ),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 10),
-          Text(
-            "Price: \$12.99",
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.green,
-              fontFamily: 'PTSerif'
-            ),
-          ),
-          Text(
-            "Availability: In Stock",
-            style: TextStyle(
-              fontSize: 16,
-              color: AppColors.black,
-              fontFamily: 'PTSerif'
-            ),
-          ),
-        ],
-      ),
+          ],
+        ),
+        SizedBox(height: 20),
+      ],
     );
   }
 }
@@ -139,17 +247,34 @@ class ButtonFieldSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(padding: EdgeInsets.all(30),
+    return Padding(
+      padding: EdgeInsets.all(30),
       child: Row(
-        spacing: 10,
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          Expanded(child:
-          ElevatedButton(
-              onPressed: () =>
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => MyApp())),
-              child: Text("Back"))
+          SizedBox(
+            width: 190,
+            height: 55,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.pink,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(50),
+                ),
+              ),
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => MyApp()),
+              ),
+              child: Text(
+                "Back",
+                style: TextStyle(
+                  fontSize: 20,
+                  color: AppColors.black,
+                  fontFamily: 'PTSerif',
+                ),
+              ),
+            ),
           ),
         ],
       ),
