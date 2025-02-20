@@ -73,13 +73,16 @@ class TextTitleSection extends StatelessWidget {
             ),
           ),
           SizedBox(height: 8),
-          Text(
-            "Discover a variety of fresh and beautiful flowers for every occasion.",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.black54,
-              fontFamily: 'PTSerif',
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0),
+            child: Text(
+              "Discover a variety of fresh and beautiful flowers for every occasion.",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.black54,
+                fontFamily: 'PTSerif',
+              ),
             ),
           ),
         ],
@@ -117,7 +120,7 @@ class _BodySectionState extends State<BodySection> {
     {
       "image": "assets/sample-flower3.jpg",
       "name": "Charming Sunflower",
-      "description": "Bright and cheerful sunflowers to bring joy to any space!",
+      "description": "Bright sunflowers to bring joy to any space!",
       "price": "\₱450.00",
       "availability": "Limited Stock"
     }
@@ -185,14 +188,17 @@ class _BodySectionState extends State<BodySection> {
                         textAlign: TextAlign.center,
                       ),
                       SizedBox(height: 10),
-                      Text(
-                        flower["description"]!,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.black54,
-                          fontFamily: 'PTSerif',
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Text(
+                          flower["description"]!,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.black54,
+                            fontFamily: 'PTSerif',
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
                       ),
                       SizedBox(height: 10),
                       Text(
