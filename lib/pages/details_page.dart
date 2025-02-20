@@ -59,20 +59,20 @@ class TextTitleSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(top: 50),
+      padding: EdgeInsets.only(top: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
             "Our Flowers",
             style: TextStyle(
-              fontSize: 24,
+              fontSize: 38,
               fontWeight: FontWeight.bold,
               color: Colors.black,
-              fontFamily: 'PTSerif',
+              fontFamily: 'Recoleta',
             ),
           ),
-          SizedBox(height: 8), // Adds spacing between the title and subtext
+          SizedBox(height: 8),
           Text(
             "Discover a variety of fresh and beautiful flowers for every occasion.",
             textAlign: TextAlign.center,
@@ -155,7 +155,7 @@ class _BodySectionState extends State<BodySection> {
             itemBuilder: (context, index) {
               final flower = flowers[index];
               return Padding(
-                padding: EdgeInsets.only(top: 20),
+                padding: EdgeInsets.only(top: 40),
                 child: SizedBox(
                   height: 450,
                   child: Column(
@@ -179,7 +179,7 @@ class _BodySectionState extends State<BodySection> {
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
-                          fontFamily: 'PTSerif',
+                          fontFamily: 'Recoleta',
                           color: Colors.black,
                         ),
                         textAlign: TextAlign.center,
@@ -201,7 +201,7 @@ class _BodySectionState extends State<BodySection> {
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: AppColors.green,
-                          fontFamily: 'PTSerif',
+                          fontFamily: 'Recoleta',
                         ),
                       ),
                       Text(
@@ -226,13 +226,13 @@ class _BodySectionState extends State<BodySection> {
             ElevatedButton(
               onPressed: _previousFlower,
               style: ElevatedButton.styleFrom(backgroundColor: AppColors.pink),
-              child: Text("Previous", style: TextStyle(fontFamily: 'PTSerif', color: Colors.white)),
+              child: Text("Previous", style: TextStyle(fontFamily: 'Recoleta', color: Colors.white)),
             ),
             SizedBox(width: 20),
             ElevatedButton(
               onPressed: _nextFlower,
               style: ElevatedButton.styleFrom(backgroundColor: AppColors.pink),
-              child: Text("Next", style: TextStyle(fontFamily: 'PTSerif', color: Colors.white)),
+              child: Text("Next", style: TextStyle(fontFamily: 'Recoleta', color: Colors.white)),
             ),
           ],
         ),
@@ -270,8 +270,8 @@ class ButtonFieldSection extends StatelessWidget {
                 "Back",
                 style: TextStyle(
                   fontSize: 20,
-                  color: AppColors.black,
-                  fontFamily: 'PTSerif',
+                  color: Colors.white,
+                  fontFamily: 'Recoleta',
                 ),
               ),
             ),
