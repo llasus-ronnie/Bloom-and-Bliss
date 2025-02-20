@@ -213,7 +213,7 @@ class InputSection extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               CustomButton("Place Order", AppColors.green, () {}),
-              SizedBox(width: 40),
+              SizedBox(width: 20),
               CustomButton("Back", AppColors.pink, () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => MyApp()),
