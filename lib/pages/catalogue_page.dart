@@ -14,7 +14,7 @@ class CataloguePage extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    const String apptitle = "Flower Shop";
+    const String apptitle = "Bloom & Bliss - Catalogue";
     return MaterialApp(
       title: apptitle,
       home: Scaffold(

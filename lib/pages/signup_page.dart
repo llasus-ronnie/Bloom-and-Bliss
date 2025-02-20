@@ -11,7 +11,7 @@ class SignUpPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "Flower Shop - Sign Up",
+      title: "Bloom & Bliss - Sign Up",
       home: Scaffold(
         body: Stack(
           children: [

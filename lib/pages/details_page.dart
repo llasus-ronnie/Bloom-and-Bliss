@@ -13,7 +13,7 @@ class DetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const String apptitle = "Flower Shop";
+    const String apptitle = "Bloom & Bliss - Flowers";
     return MaterialApp(
       title: apptitle,
       home: Scaffold(
