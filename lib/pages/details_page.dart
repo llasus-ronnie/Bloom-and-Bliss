@@ -168,7 +168,7 @@ class _BodySectionState extends State<BodySection> {
                         width: 250,
                         height: 250,
                         decoration: BoxDecoration(
-                          border: Border.all(color: AppColors.pink, width: 10),
+                          border: Border.all(color: AppColors.yellow, width: 10),
                           borderRadius: BorderRadius.circular(20),
                           image: DecorationImage(
                             image: AssetImage(flower["image"]!),
@@ -263,7 +263,7 @@ class ButtonFieldSection extends StatelessWidget {
             height: 55,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.pink,
+                backgroundColor: AppColors.yellow,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(50),
                 ),
@@ -276,7 +276,7 @@ class ButtonFieldSection extends StatelessWidget {
                 "Back",
                 style: TextStyle(
                   fontSize: 20,
-                  color: Colors.white,
+                  color: Colors.black,
                   fontFamily: 'Recoleta',
                 ),
               ),
