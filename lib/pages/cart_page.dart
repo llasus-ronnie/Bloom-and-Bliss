@@ -17,20 +17,20 @@ class CartPage extends StatelessWidget {
       title: "Bloom & Bliss - Your Cart",
       home: Scaffold(
         appBar: PreferredSize(
-          preferredSize: Size.fromHeight(50),
+          preferredSize: Size.fromHeight(80),
           child: AppBar(
+            backgroundColor: AppColors.beige,
             centerTitle: true,
-            flexibleSpace: Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage("assets/flowers-header.jpg"),
-                  fit: BoxFit.cover,
-                ),
+            flexibleSpace: Center(
+              child: Padding(
+                padding: EdgeInsets.only(top: 10, bottom: 5),
+                child: Image.asset("assets/bnb-logo.png", height: 70),
               ),
+              ),
+            iconTheme: IconThemeData(
+                color: AppColors.pink
             ),
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-          ),
+            ),
         ),
         drawer: Sidenav(),
         body: SingleChildScrollView(

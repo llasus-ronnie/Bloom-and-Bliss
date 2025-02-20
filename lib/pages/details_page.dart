@@ -254,13 +254,13 @@ class ButtonFieldSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(30),
+      padding: EdgeInsets.all(20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           SizedBox(
-            width: 190,
-            height: 55,
+            width: 140,
+            height: 45,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.yellow,
@@ -275,7 +275,7 @@ class ButtonFieldSection extends StatelessWidget {
               child: Text(
                 "Back",
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 18,
                   color: Colors.black,
                   fontFamily: 'Recoleta',
                 ),
