@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:bloom_and_bliss/sidenav.dart';
 import 'package:bloom_and_bliss/main.dart';
 import 'dart:ui';
+import 'package:bloom_and_bliss/constants/colors.dart';
 
 
 void main() {
@@ -18,25 +19,26 @@ class CataloguePage extends StatelessWidget {
     return MaterialApp(
       title: apptitle,
       home: Scaffold(
-        backgroundColor: Color(0xFFF7E9DE),
         appBar: PreferredSize(
-          preferredSize: Size.fromHeight(50),
+          preferredSize: Size.fromHeight(80),
           child: AppBar(
+            backgroundColor: AppColors.beige,
             centerTitle: true,
-            flexibleSpace: Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage("assets/flowers-header.jpg"),
-                  fit: BoxFit.cover,
-                ),
+            flexibleSpace: Center(
+              child: Padding(
+                padding: EdgeInsets.only(top: 10, bottom: 5),
+                child: Image.asset("assets/bnb-logo.png", height: 70),
               ),
             ),
-            backgroundColor: Colors.transparent,
-            elevation: 0,
+            iconTheme: IconThemeData(
+                color: AppColors.pink
+            ),
           ),
         ),
         drawer: Sidenav(),
         body: SingleChildScrollView(
+          child: Container(
+          color: AppColors.beige,
           child: Column(
               children: [
                 SizedBox(height: 20),
@@ -50,6 +52,7 @@ class CataloguePage extends StatelessWidget {
           ),
         ),
       ),
+    ),
     );
   }
 }
@@ -84,25 +87,25 @@ class FlowerGrid extends StatelessWidget {
       "image": "https://www.redflowersngifts.com/cdn/shop/products/roses-bouquet-3-675845.jpg?v=1638706779",
       "title": "Rose Bouquet",
       "rating": 4.5,
-      "price": "\$25.99"
+      "price": "\₱550.00"
     },
     {
       "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSSw7eCN14BX6Te1LHvLKdSLTsLSdJoWgDMdQ&s",
       "title": "Tulip Mix",
       "rating": 4.2,
-      "price": "\$19.99"
+      "price": "\₱480.00"
     },
     {
       "image": "https://via.placeholder.com/150",
       "title": "Sunflower Set",
       "rating": 4.8,
-      "price": "\$29.99"
+      "price": "\₱450.00"
     },
     {
       "image": "https://via.placeholder.com/150",
       "title": "Lily Collection",
       "rating": 4.3,
-      "price": "\$21.99"
+      "price": "\₱390.00"
     },
   ];
 
@@ -154,7 +157,7 @@ class FlowerGrid extends StatelessWidget {
                     Text(
                     flower["title"],
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, fontFamily: 'Recoleta'),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -167,7 +170,7 @@ class FlowerGrid extends StatelessWidget {
                     children: [
                       Icon(Icons.star, color: Colors.amber, size: 16),
                       SizedBox(width: 5),
-                      Text("${flower["rating"]}", style: TextStyle(fontSize: 14)),
+                      Text("${flower["rating"]}", style: TextStyle(fontSize: 14, fontFamily: 'PTSerif')),
                     ],
                   ),
 
@@ -176,7 +179,7 @@ class FlowerGrid extends StatelessWidget {
                   /// Price (Fixed Position)
                   Text(
                     flower["price"],
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.green),
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.green, fontFamily: 'Recoleta'),
                   ),
 
                   SizedBox(height: 10),
@@ -186,11 +189,11 @@ class FlowerGrid extends StatelessWidget {
                         child: ElevatedButton(
                           onPressed: () {},
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.pinkAccent,
+                            backgroundColor: AppColors.pink,
                             foregroundColor: Colors.white,
                             padding: EdgeInsets.symmetric(vertical: 8), // Fixed closing parenthesis
                           ),
-                          child: Text("Add to Cart", style: TextStyle(fontSize: 12)),
+                          child: Text("Add to Cart", style: TextStyle(fontSize: 12, fontFamily: 'Recoleta')),
                         ),
                       ),
                     ],
@@ -241,10 +244,10 @@ class ButtonRowFilter extends StatelessWidget {
         child: ElevatedButton(
           onPressed: () {},
           style: ElevatedButton.styleFrom(
-            backgroundColor: Color(0xFFC57D75),
-            foregroundColor: Colors.black,
+            backgroundColor: AppColors.yellow,
+            foregroundColor: AppColors.black,
             padding: EdgeInsets.symmetric(horizontal: 20),
-            textStyle: TextStyle(fontSize: 16),
+            textStyle: TextStyle(fontSize: 16, fontFamily: 'Recoleta'),
             elevation: 2,
           ),
           child: Text(text),
@@ -254,20 +257,39 @@ class ButtonRowFilter extends StatelessWidget {
   }
 }
 
-class ButtonFieldSection extends StatelessWidget{
+class ButtonFieldSection extends StatelessWidget {
   const ButtonFieldSection({super.key});
 
   @override
-  Widget build(BuildContext context){
-    return Padding(padding: EdgeInsets.all(30),
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.all(20),
       child: Row(
-        spacing: 10,
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          Expanded(child:
-          ElevatedButton(
-              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => MyApp())),
-              child: Text("Back"))
+          SizedBox(
+            width: 140,
+            height: 45,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.yellow,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(50),
+                ),
+              ),
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => MyApp()),
+              ),
+              child: Text(
+                "Back",
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.black,
+                  fontFamily: 'Recoleta',
+                ),
+              ),
+            ),
           ),
         ],
       ),
@@ -376,6 +398,7 @@ class HeroLayoutCard extends StatelessWidget {
                       style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
+                        fontFamily: 'Recoleta'
                       ),
                     ),
                     const SizedBox(height: 5),
@@ -383,6 +406,7 @@ class HeroLayoutCard extends StatelessWidget {
                       imageInfo.subtitle,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: Colors.white,
+                        fontFamily: 'PTSerif'
                       ),
                     ),
                   ],

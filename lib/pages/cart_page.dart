@@ -34,6 +34,8 @@ class CartPage extends StatelessWidget {
         ),
         drawer: Sidenav(),
         body: SingleChildScrollView(
+          child: Container(
+          color: AppColors.beige,
           child: Column(
             children: [
               SizedBox(height: 30),
@@ -47,6 +49,7 @@ class CartPage extends StatelessWidget {
           ),
         ),
       ),
+    ),
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:bloom_and_bliss/main.dart';
+import 'package:bloom_and_bliss/constants/colors.dart';
 
 void main() {
   runApp(const SignUpPage());
@@ -56,6 +57,7 @@ class SignUpPage extends StatelessWidget {
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black,
+                                  fontFamily: 'Recoleta'
                                 ),
                               ),
                               const SizedBox(height: 20),
@@ -111,7 +113,7 @@ class _SignUpFormState extends State<SignUpForm> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  child: const Text("Back", style: TextStyle(color: Colors.white)),
+                  child: const Text("Back", style: TextStyle(color: Colors.white, fontFamily: 'Recoleta')),
                 ),
               ),
               const SizedBox(width: 10),
@@ -123,12 +125,12 @@ class _SignUpFormState extends State<SignUpForm> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.pink[300],
+                    backgroundColor: AppColors.pink,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  child: const Text("Sign Up", style: TextStyle(color: Colors.white)),
+                  child: const Text("Sign Up", style: TextStyle(color: Colors.white, fontFamily: 'Recoleta')),
                 ),
               ),
             ],
@@ -147,6 +149,7 @@ class _SignUpFormState extends State<SignUpForm> {
           filled: true,
           fillColor: Colors.white,
           labelText: labelText,
+          labelStyle: const TextStyle(fontFamily: 'PTSerif'),
           prefixIcon: Icon(icon, color: Colors.pink[300]),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
