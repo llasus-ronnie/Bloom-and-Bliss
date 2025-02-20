@@ -26,33 +26,37 @@ class CartPage extends StatelessWidget {
                 padding: EdgeInsets.only(top: 10, bottom: 5),
                 child: Image.asset("assets/bnb-logo.png", height: 70),
               ),
-              ),
-            iconTheme: IconThemeData(
-                color: AppColors.pink
             ),
-            ),
+            iconTheme: IconThemeData(color: AppColors.pink),
+          ),
         ),
         drawer: Sidenav(),
         body: SingleChildScrollView(
-          child: Container(
-          color: AppColors.beige,
-          child: Column(
-            children: [
-              SizedBox(height: 30),
-              TextTitleSection(),
-              SizedBox(height: 40),
-              CartSection(),
-              SizedBox(height: 40),
-              InputSection(),
-              SizedBox(height: 40),
-            ],
+          child: Center(
+            child: Container(
+              width: double.infinity,
+              color: AppColors.beige,
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(height: 30),
+                  TextTitleSection(),
+                  SizedBox(height: 40),
+                  Center(child: CartSection()), // Ensure CartSection is centered
+                  SizedBox(height: 40),
+                  Center(child: InputSection()), // Ensure InputSection is centered
+                  SizedBox(height: 40),
+                ],
+              ),
+            ),
           ),
         ),
       ),
-    ),
     );
   }
-}
+  }
 
 class TextTitleSection extends StatelessWidget {
   const TextTitleSection({super.key});
@@ -79,13 +83,18 @@ class CartSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        CartItem(imagePath: "assets/flower-placeholder1.png", name: "Rose Bouquet", price: "\₱999.00"),
-        SizedBox(width: 20),
-        CartItem(imagePath: "assets/flower-placeholder2.png", name: "Assorted Arrangement", price: "\₱1299.00"),
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Wrap(
+          spacing: 20,
+          runSpacing: 20,
+          alignment: WrapAlignment.center,
+          children: [
+            CartItem(imagePath: "assets/flower-placeholder1.png", name: "Rose Bouquet", price: "\₱999.00"),
+            CartItem(imagePath: "assets/flower-placeholder2.png", name: "Assorted Arrangement", price: "\₱1299.00"),
+          ],
+        );
+      },
     );
   }
 }
@@ -99,25 +108,28 @@ class CartItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double itemWidth = screenWidth > 600 ? 300 : screenWidth * 0.8;
+
     return Container(
-      width: 300,
+      width: itemWidth,
       padding: EdgeInsets.all(15),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: Colors.black12,
-            blurRadius: 6,
-            offset: Offset(0, 4),
+            color: Colors.black26,
+            blurRadius: 12,
+            offset: Offset(0, 6),
           ),
         ],
       ),
       child: Column(
         children: [
           Container(
-            width: 375,
-            height: 375,
+            width: itemWidth * 1.25,
+            height: itemWidth * 1.25,
             decoration: BoxDecoration(
               border: Border.all(color: AppColors.black, width: 1),
               borderRadius: BorderRadius.circular(10),
@@ -148,17 +160,20 @@ class InputSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double containerWidth = screenWidth > 700 ? 640 : screenWidth * 0.9;
+
     return Container(
-      width: 640,
+      width: containerWidth,
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: Colors.black12,
-            blurRadius: 6,
-            offset: Offset(0, 4),
+            color: Colors.black26,
+            blurRadius: 12,
+            offset: Offset(0, 6),
           ),
         ],
       ),
@@ -168,35 +183,29 @@ class InputSection extends StatelessWidget {
           Center(
             child: Text(
               "Shipping Details",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Recoleta',
-              ),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'Recoleta'),
             ),
           ),
           SizedBox(height: 15),
-          CustomTextField("Enter address...", 600, Icons.home),
+          CustomTextField("Enter address...", Icons.home),
           SizedBox(height: 15),
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CustomTextField("Recipient Name", 290, Icons.person),
+              Expanded(child: CustomTextField("Recipient Name", Icons.person)),
               SizedBox(width: 20),
-              CustomTextField("Phone Number", 290, Icons.phone, isNumeric: true),
+              Expanded(child: CustomTextField("Phone Number", Icons.phone, isNumeric: true)),
             ],
           ),
           SizedBox(height: 15),
-          CustomTextField("Additional Information", 600, Icons.info),
+          CustomTextField("Additional Information", Icons.info),
           SizedBox(height: 15),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded(child: CustomTextField("Zip Code", 0, Icons.local_post_office, isNumeric: true)),
+              Expanded(child: CustomTextField("Zip Code", Icons.local_post_office, isNumeric: true)),
               SizedBox(width: 15),
-              Expanded(child: CustomTextField("City", 0, Icons.location_city)),
+              Expanded(child: CustomTextField("City", Icons.location_city)),
               SizedBox(width: 15),
-              Expanded(child: CustomTextField("Region", 0, Icons.map)),
+              Expanded(child: CustomTextField("Region", Icons.map)),
             ],
           ),
           SizedBox(height: 25),
@@ -219,38 +228,33 @@ class InputSection extends StatelessWidget {
 
 class CustomTextField extends StatelessWidget {
   final String labelText;
-  final double width;
   final IconData icon;
   final bool isNumeric;
 
-  const CustomTextField(this.labelText, this.width, this.icon, {this.isNumeric = false, super.key});
+  const CustomTextField(this.labelText, this.icon, {this.isNumeric = false, super.key});
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: width,
-      child: TextField(
-        textAlign: TextAlign.start,
-        keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
-        inputFormatters: isNumeric ? [FilteringTextInputFormatter.digitsOnly] : null,
-        decoration: InputDecoration(
-          prefixIcon: Icon(icon, color: AppColors.pink),
-          labelText: labelText,
-          labelStyle: TextStyle(color: AppColors.pink),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(50),
-            borderSide: BorderSide(color: AppColors.pink, width: 2),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(50),
-            borderSide: BorderSide(color: AppColors.black, width: 0.5),
-          ),
-          filled: true,
-          fillColor: AppColors.beige,
-          contentPadding: EdgeInsets.symmetric(vertical: 18, horizontal: 25),
+    return TextField(
+      keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
+      inputFormatters: isNumeric ? [FilteringTextInputFormatter.digitsOnly] : null,
+      decoration: InputDecoration(
+        prefixIcon: Icon(icon, color: AppColors.pink),
+        labelText: labelText,
+        labelStyle: TextStyle(color: AppColors.pink),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(50),
+          borderSide: BorderSide(color: AppColors.pink, width: 2),
         ),
-        cursorColor: AppColors.black,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(50),
+          borderSide: BorderSide(color: AppColors.black, width: 0.5),
+        ),
+        filled: true,
+        fillColor: AppColors.beige,
+        contentPadding: EdgeInsets.symmetric(vertical: 18, horizontal: 25),
       ),
+      cursorColor: AppColors.black,
     );
   }
 }
@@ -259,6 +263,7 @@ class CustomButton extends StatelessWidget {
   final String text;
   final Color color;
   final VoidCallback onPressed;
+
   const CustomButton(this.text, this.color, this.onPressed, {super.key});
 
   @override
@@ -269,9 +274,7 @@ class CustomButton extends StatelessWidget {
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: color,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(50),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
         ),
         onPressed: onPressed,
         child: Text(
