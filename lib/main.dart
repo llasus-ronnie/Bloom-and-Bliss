@@ -43,14 +43,22 @@ class MyApp extends StatelessWidget {
               ),
               Container(
                 alignment: Alignment.center,
-                color: AppColors.pink,
-                padding: EdgeInsets.symmetric(vertical: 20),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    TextTitleSection(),
-                    BodySection(),
-                    ButtonRow(),
+                    Container(
+                      color: AppColors.yellow,
+                      child: ButtonRow(),
+                    ),
+                    Container(
+                      color: AppColors.pink,
+                      child: Column(
+                        children: [
+                          TextTitleSection(),
+                          BodySection(),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -231,14 +239,14 @@ class ButtonRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 10),
+      padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 40),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Expanded(child: _buildButton(context, Icons.storefront, "Shop Now", const CataloguePage())),
-          const SizedBox(width: 10),
+          const SizedBox(width: 20),
           Expanded(child: _buildButton(context, Icons.local_florist, "Our Flowers", const DetailsPage())),
-          const SizedBox(width: 10),
+          const SizedBox(width: 20),
           Expanded(child: _buildButton(context, Icons.shopping_cart, "Your Cart", const CartPage())),
         ],
       ),
