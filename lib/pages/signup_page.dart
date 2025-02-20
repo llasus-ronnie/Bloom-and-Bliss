@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:bloom_and_bliss/sidenav.dart';
 import 'package:bloom_and_bliss/main.dart';
 
 void main() {
@@ -7,83 +6,159 @@ void main() {
 }
 
 class SignUpPage extends StatelessWidget {
-  const SignUpPage ({super.key});
+  const SignUpPage({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    const String apptitle = "Flower Shop";
     return MaterialApp(
-      title: apptitle,
+      title: "Flower Shop - Sign Up",
       home: Scaffold(
-        appBar: PreferredSize(
-          preferredSize: Size.fromHeight(50),
-          child: AppBar(
-            centerTitle: true,
-            flexibleSpace: Container(
-              decoration: BoxDecoration(
+        body: Stack(
+          children: [
+            // Background Image
+            Container(
+              decoration: const BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage("assets/flowers-header.jpg"),
+                  image: AssetImage("assets/flowers-bg.jpg"),
                   fit: BoxFit.cover,
                 ),
               ),
             ),
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-          ),
-        ),
-        drawer: Sidenav(),
-        body: SingleChildScrollView(
-          child: Column(
-              children: [
-                TextTitleSection(),
-                ButtonFieldSection()
-              ]
-          ),
+            // Centered Content
+            Center(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Logo
+                      Image.asset(
+                        'assets/bnb-logo.png',
+                        height: 100,
+                      ),
+                      const SizedBox(height: 10),
+                      // Sign Up Card
+                      Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        elevation: 8,
+                        color: Colors.white.withOpacity(0.9),
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Text(
+                                "Create an Account",
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              const SignUpForm(),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-class TextTitleSection extends StatelessWidget {
-  const TextTitleSection({super.key});
+class SignUpForm extends StatefulWidget {
+  const SignUpForm({super.key});
+
+  @override
+  _SignUpFormState createState() => _SignUpFormState();
+}
+
+class _SignUpFormState extends State<SignUpForm> {
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
-    return Padding(padding: EdgeInsets.only(top: 70),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+    return Form(
+      key: _formKey,
+      child: Column(
         children: [
-          Text("Sign Up Page",
-            style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.black
-            ),
+          buildTextField("Full Name", Icons.person),
+          buildTextField("Email", Icons.email),
+          buildTextField("Phone Number", Icons.phone),
+          buildTextField("Password", Icons.lock, obscureText: true),
+          buildTextField("Confirm Password", Icons.lock, obscureText: true),
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () => Navigator.push(
+                      context, MaterialPageRoute(builder: (context) => MyApp())),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.grey[400],
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: const Text("Back", style: TextStyle(color: Colors.white)),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      // Process sign-up
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.pink[300],
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: const Text("Sign Up", style: TextStyle(color: Colors.white)),
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
-}
 
-class ButtonFieldSection extends StatelessWidget{
-  const ButtonFieldSection({super.key});
-
-  @override
-  Widget build(BuildContext context){
-    return Padding(padding: EdgeInsets.all(30),
-      child: Row(
-        spacing: 10,
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          Expanded(child:
-          ElevatedButton(
-              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => MyApp())),
-              child: Text("Back"))
+  Widget buildTextField(String labelText, IconData icon, {bool obscureText = false}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 15),
+      child: TextFormField(
+        obscureText: obscureText,
+        decoration: InputDecoration(
+          filled: true,
+          fillColor: Colors.white,
+          labelText: labelText,
+          prefixIcon: Icon(icon, color: Colors.pink[300]),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide.none,
           ),
-        ],
+        ),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return "$labelText is required";
+          }
+          return null;
+        },
       ),
     );
   }
