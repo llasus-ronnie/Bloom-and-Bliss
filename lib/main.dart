@@ -259,6 +259,8 @@ class ButtonRow extends StatelessWidget {
         Navigator.push(context, MaterialPageRoute(builder: (context) => page));
       },
       child: Container(
+        height: 150,
+        width: 110,
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: AppColors.beige,
