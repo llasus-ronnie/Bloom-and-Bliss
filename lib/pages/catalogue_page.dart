@@ -87,25 +87,25 @@ class FlowerGrid extends StatelessWidget {
       "image": "https://www.redflowersngifts.com/cdn/shop/products/roses-bouquet-3-675845.jpg?v=1638706779",
       "title": "Rose Bouquet",
       "rating": 4.5,
-      "price": "\₱550.00"
+      "price": "PHP550.00"
     },
     {
       "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSSw7eCN14BX6Te1LHvLKdSLTsLSdJoWgDMdQ&s",
       "title": "Tulip Mix",
       "rating": 4.2,
-      "price": "\₱480.00"
+      "price": "PHP480.00"
     },
     {
       "image": "https://assets.florista.ph/uploads/product-pics/5005_88_5005.webp",
       "title": "Sunflower Set",
       "rating": 4.8,
-      "price": "\₱450.00"
+      "price": "PHP450.00"
     },
     {
       "image": "https://www.fnp.com/images/pr/philippines/l/v20220111163039/white-oriental-lilies-bouquet_1.jpg",
       "title": "Lily Collection",
       "rating": 4.3,
-      "price": "\₱390.00"
+      "price": "PHP390.00"
     },
   ];
 

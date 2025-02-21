@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
             flexibleSpace: Center(
               child: Padding(
                 padding: const EdgeInsets.only(top: 10, bottom: 5),
-                child: Image.asset("assets/bnb-logo.png", height: 70),
+                child: Image.asset("assets/sidenav/bnb-logo.png", height: 70),
               ),
             ),
             iconTheme: const IconThemeData(color: AppColors.pink),
@@ -78,9 +78,9 @@ class ImageCarousel extends StatefulWidget {
 class _ImageCarouselState extends State<ImageCarousel> {
   final PageController _pageController = PageController();
   final List<String> images = [
-    "assets/image2.jpg",
-    "assets/image1.jpg",
-    "assets/image3.jpg",
+    "assets/homepage/image2.jpg",
+    "assets/homepage/image1.jpg",
+    "assets/homepage/image3.jpg",
   ];
   int currentIndex = 0;
 

@@ -24,7 +24,7 @@ class CartPage extends StatelessWidget {
             flexibleSpace: Center(
               child: Padding(
                 padding: EdgeInsets.only(top: 10, bottom: 5),
-                child: Image.asset("assets/bnb-logo.png", height: 70),
+                child: Image.asset("assets/sidenav/bnb-logo.png", height: 70),
               ),
             ),
             iconTheme: IconThemeData(color: AppColors.pink),
@@ -90,8 +90,8 @@ class CartSection extends StatelessWidget {
           runSpacing: 20,
           alignment: WrapAlignment.center,
           children: [
-            CartItem(imagePath: "assets/flower-placeholder1.png", name: "Rose Bouquet", price: "\₱999.00"),
-            CartItem(imagePath: "assets/flower-placeholder2.png", name: "Assorted Arrangement", price: "\₱1299.00"),
+            CartItem(imagePath: "assets/cart/flower-placeholder1.png", name: "Rose Bouquet", price: "PHP999.00"),
+            CartItem(imagePath: "assets/cart/flower-placeholder2.png", name: "Assorted Arrangement", price: "PHP1299.00"),
           ],
         );
       },

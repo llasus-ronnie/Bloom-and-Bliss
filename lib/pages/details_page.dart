@@ -25,7 +25,7 @@ class DetailsPage extends StatelessWidget {
             flexibleSpace: Center(
               child: Padding(
                 padding: EdgeInsets.only(top: 10, bottom: 5),
-                child: Image.asset("assets/bnb-logo.png", height: 70),
+                child: Image.asset("assets/sidenav/bnb-logo.png", height: 70),
               ),
             ),
             iconTheme: IconThemeData(
@@ -37,12 +37,18 @@ class DetailsPage extends StatelessWidget {
         body: SingleChildScrollView(
           child: Container(
             alignment: Alignment.center,
-            color: AppColors.beige,
             child: Column(
               children: [
-                TextTitleSection(),
-                BodySection(),
-                ButtonFieldSection()
+                Container(
+                  color: AppColors.beige,
+                  child: Column(
+                    children: [
+                      TextTitleSection(),
+                      BodySection(),
+                      ButtonFieldSection()
+                    ],
+                  )
+                )
               ],
             ),
           ),
@@ -103,24 +109,24 @@ class _BodySectionState extends State<BodySection> {
 
   final List<Map<String, String>> flowers = [
     {
-      "image": "assets/sample-flower.jpg",
+      "image": "assets/details/sample-flower.jpg",
       "name": "Beautiful Red Rose",
       "description": "This vibrant red rose symbolizes love and passion.",
-      "price": "\₱550.00",
+      "price": "PHP550.00",
       "availability": "In Stock"
     },
     {
-      "image": "assets/sample-flower2.jpg",
+      "image": "assets/details/sample-flower2.jpg",
       "name": "Elegant White Lily",
       "description": "A graceful white lily that represents purity.",
-      "price": "\₱670.00",
+      "price": "PHP670.00",
       "availability": "In Stock"
     },
     {
-      "image": "assets/sample-flower3.jpg",
+      "image": "assets/details/sample-flower3.jpg",
       "name": "Charming Sunflower",
       "description": "Bright sunflowers to bring joy to any space!",
-      "price": "\₱450.00",
+      "price": "PHP450.00",
       "availability": "Limited Stock"
     }
   ];

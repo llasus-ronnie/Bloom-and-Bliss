@@ -35,7 +35,7 @@ class SignUpPage extends StatelessWidget {
                     children: [
                       // Logo
                       Image.asset(
-                        'assets/bnb-logo.png',
+                        'assets/sidenav/bnb-logo.png',
                         height: 100,
                       ),
                       const SizedBox(height: 10),

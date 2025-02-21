@@ -55,7 +55,7 @@ class _Drwheader extends State<DrwHeader> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 CircleAvatar(
-                  backgroundImage: AssetImage('assets/guest-icon.png'),
+                  backgroundImage: AssetImage('assets/sidenav/guest-icon.png'),
                   radius: 40,
                 ),
                 SizedBox(height: 10),
@@ -63,8 +63,9 @@ class _Drwheader extends State<DrwHeader> {
                   "Guest User",
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 12,
+                    fontSize: 14,
                     fontWeight: FontWeight.bold,
+                    fontFamily: 'PTSerif'
                   ),
                 ),
               ],
@@ -87,27 +88,27 @@ class _DrwListView extends State<DrwListView> {
       child: Column(
         children: [
           ListTile(
-            title: Text("Home", style: TextStyle(color: AppColors.black)),
+            title: Text("Home", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
             leading: Icon(Icons.home, color: AppColors.pink),
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => MyApp())),
           ),
           ListTile(
-            title: Text("Sign Up", style: TextStyle(color: AppColors.black)),
+            title: Text("Sign Up", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
             leading: Icon(Icons.person, color: AppColors.pink),
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpPage())),
           ),
           ListTile(
-            title: Text("Your Cart", style: TextStyle(color: AppColors.black)),
+            title: Text("Your Cart", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
             leading: Icon(Icons.shopping_cart, color: AppColors.pink),
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => CartPage())),
           ),
           ListTile(
-            title: Text("Our Flowers", style: TextStyle(color: AppColors.black)),
+            title: Text("Our Flowers", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
             leading: Icon(Icons.local_florist, color: AppColors.pink),
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => DetailsPage())),
           ),
           ListTile(
-            title: Text("Shop Catalogue", style: TextStyle(color: AppColors.black)),
+            title: Text("Shop Catalogue", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
             leading: Icon(Icons.apps, color: AppColors.pink),
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => CataloguePage())),
           ),
