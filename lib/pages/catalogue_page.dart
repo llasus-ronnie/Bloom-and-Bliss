@@ -96,13 +96,13 @@ class FlowerGrid extends StatelessWidget {
       "price": "\₱480.00"
     },
     {
-      "image": "https://via.placeholder.com/150",
+      "image": "https://assets.florista.ph/uploads/product-pics/5005_88_5005.webp",
       "title": "Sunflower Set",
       "rating": 4.8,
       "price": "\₱450.00"
     },
     {
-      "image": "https://via.placeholder.com/150",
+      "image": "https://www.fnp.com/images/pr/philippines/l/v20220111163039/white-oriental-lilies-bouquet_1.jpg",
       "title": "Lily Collection",
       "rating": 4.3,
       "price": "\₱390.00"
