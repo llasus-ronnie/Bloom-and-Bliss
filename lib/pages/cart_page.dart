@@ -161,10 +161,10 @@ class InputSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    double containerWidth = screenWidth > 700 ? 640 : screenWidth * 0.9;
+    // double containerWidth = screenWidth > 700 ? 640 : screenWidth * 0.9;
 
     return Container(
-      width: containerWidth,
+      // width: containerWidth,
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -209,15 +209,17 @@ class InputSection extends StatelessWidget {
             ],
           ),
           SizedBox(height: 25),
+
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CustomButton("Place Order", AppColors.green, () {}),
+              CustomButton("Place Order", AppColors.pink, () {}),
               SizedBox(width: 20),
-              CustomButton("Back", AppColors.pink, () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => MyApp()),
-              )),
+              CustomButton("Back", AppColors.green
+                  , () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => MyApp()),
+                  )),
             ],
           ),
         ],
@@ -269,8 +271,8 @@ class CustomButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 190,
-      height: 55,
+      width: 140,
+      height: 50,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: color,
@@ -279,7 +281,7 @@ class CustomButton extends StatelessWidget {
         onPressed: onPressed,
         child: Text(
           text,
-          style: TextStyle(fontSize: 20, color: AppColors.black, fontFamily: 'BreeSerif'),
+          style: TextStyle(fontSize: 18, color: Colors.white, fontFamily: 'Recoleta', fontWeight: FontWeight.bold),
         ),
       ),
     );

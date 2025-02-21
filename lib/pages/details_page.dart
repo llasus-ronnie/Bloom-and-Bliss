@@ -36,7 +36,6 @@ class DetailsPage extends StatelessWidget {
         drawer: Sidenav(),
         body: SingleChildScrollView(
           child: Container(
-            height: MediaQuery.of(context).size.height - 100,
             alignment: Alignment.center,
             color: AppColors.beige,
             child: Column(
@@ -160,13 +159,13 @@ class _BodySectionState extends State<BodySection> {
               return Padding(
                 padding: EdgeInsets.only(top: 40),
                 child: SizedBox(
-                  height: 450,
+                  height: 250,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
                         width: 250,
-                        height: 250,
+                        height: 240,
                         decoration: BoxDecoration(
                           border: Border.all(color: AppColors.yellow, width: 10),
                           borderRadius: BorderRadius.circular(20),
