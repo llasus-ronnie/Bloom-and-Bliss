@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:bloom_and_bliss/sidenav.dart';
+import 'constants/colors.dart';
+import 'package:bloom_and_bliss/pages/cart_page.dart';
+import 'package:bloom_and_bliss/pages/details_page.dart';
+import 'package:bloom_and_bliss/pages/catalogue_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -7,119 +12,278 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    const String apptitle = "Bloom & Bliss";
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+      debugShowCheckedModeBanner: false,
+      title: apptitle,
+      home: Scaffold(
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(80),
+          child: AppBar(
+            backgroundColor: AppColors.beige,
+            centerTitle: true,
+            flexibleSpace: Center(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 10, bottom: 5),
+                child: Image.asset("assets/sidenav/bnb-logo.png", height: 70),
+              ),
+            ),
+            iconTheme: const IconThemeData(color: AppColors.pink),
+          ),
+        ),
+        drawer: Sidenav(),
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.9,
+                child: ImageCarousel(),
+              ),
+              Container(
+                alignment: Alignment.center,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      color: AppColors.yellow,
+                      child: ButtonRow(),
+                    ),
+                    Container(
+                      color: AppColors.pink,
+                      child: Column(
+                        children: [
+                          TextTitleSection(),
+                          BodySection(),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
+class ImageCarousel extends StatefulWidget {
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  _ImageCarouselState createState() => _ImageCarouselState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
+class _ImageCarouselState extends State<ImageCarousel> {
+  final PageController _pageController = PageController();
+  final List<String> images = [
+    "assets/homepage/image2.jpg",
+    "assets/homepage/image1.jpg",
+    "assets/homepage/image3.jpg",
+  ];
+  int currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        PageView.builder(
+          controller: _pageController,
+          itemCount: images.length,
+          onPageChanged: (index) {
+            setState(() {
+              currentIndex = index;
+            });
+          },
+          itemBuilder: (context, index) {
+            return Image.asset(
+              images[index],
+              fit: BoxFit.cover,
+              width: double.infinity,
+            );
+          },
+        ),
+
+        Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+                child: Text(
+                  "Bloom & Bliss",
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 44,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Recoleta',
+                    color: Colors.white,
+                    shadows: <Shadow>[
+                      Shadow(
+                        offset: Offset(1.0, 1.0),
+                        blurRadius: 3.0,
+                        color: Color.fromARGB(200, 0, 0, 0),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 2),
+              const Text(
+                "Happiness in Every Petal",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 22,
+                  fontFamily: 'PTSerif',
+                  color: Colors.white,
+                  shadows: <Shadow>[
+                    Shadow(
+                      offset: Offset(1.0, 1.0),
+                      blurRadius: 3.0,
+                      color: Color.fromARGB(255, 0, 0, 0),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        Positioned(
+          bottom: 20,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(images.length, (index) {
+              return GestureDetector(
+                onTap: () {
+                  _pageController.animateToPage(
+                    index,
+                    duration: Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                  );
+                  setState(() {
+                    currentIndex = index;
+                  });
+                },
+                child: Container(
+                  margin: const EdgeInsets.all(4.0),
+                  width: 10.0,
+                  height: 10.0,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: currentIndex == index ? AppColors.pink : Colors.white,
+                  ),
+                ),
+              );
+            }),
+          ),
+        )
+      ],
+    );
+  }}
+
+class TextTitleSection extends StatelessWidget {
+  const TextTitleSection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(padding: EdgeInsets.only(top: 50),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+              Text("About Bloom & Bliss",
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.beige,
+                  fontFamily: 'Recoleta'
+                ),
+              ),
+            ],
+        ),
+    );
+  }
+}
+
+class BodySection extends StatelessWidget {
+  const BodySection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.all(40),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "At Bloom & Bliss, we believe that every bloom tells a story and every petal carries a feeling. Our flower shop is more than just a place to buy flowers—it’s a celebration of life’s most cherished moments. From vibrant bouquets that brighten your day to elegant arrangements that speak the words your heart cannot, we craft each creation with love, care, and an eye for beauty. \n\n  Whether you’re expressing love, gratitude, or sympathy, our carefully curated floral designs bring warmth and joy to every occasion. With fresh, high-quality flowers and a passion for artistry, Bloom & Bliss is here to make every moment blossom with meaning. Happiness truly blossoms here.",
+            textAlign: TextAlign.justify,
+            style: TextStyle(
+                fontSize: 18,
+                color: AppColors.black,
+                fontFamily: 'PTSerif'
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ButtonRow extends StatelessWidget {
+  const ButtonRow({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 40),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Expanded(child: _buildButton(context, Icons.storefront, "Shop Now", const CataloguePage())),
+          const SizedBox(width: 20),
+          Expanded(child: _buildButton(context, Icons.local_florist, "Our Flowers", const DetailsPage())),
+          const SizedBox(width: 20),
+          Expanded(child: _buildButton(context, Icons.shopping_cart, "Your Cart", const CartPage())),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildButton(BuildContext context, IconData icon, String label, Widget page) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => page));
+      },
+      child: Container(
+        height: 150,
+        width: 110,
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: AppColors.beige,
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 50, color: AppColors.pink),
+            const SizedBox(height: 5),
             Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+              label,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: AppColors.pink,
+                fontSize: 14,
+                fontFamily: 'Recoleta',
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
