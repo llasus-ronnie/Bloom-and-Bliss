@@ -4,6 +4,7 @@ import 'package:bloom_and_bliss/pages/signup_page.dart';
 import 'package:bloom_and_bliss/pages/cart_page.dart';
 import 'package:bloom_and_bliss/pages/details_page.dart';
 import 'package:bloom_and_bliss/pages/catalogue_page.dart';
+import 'package:bloom_and_bliss/pages/profile_page.dart';
 import 'package:bloom_and_bliss/constants/colors.dart';
 
 void main() {
@@ -49,28 +50,33 @@ class _Drwheader extends State<DrwHeader> {
               },
             ),
           ),
-          Align(
-            alignment: Alignment.center,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircleAvatar(
-                  backgroundImage: AssetImage('assets/sidenav/guest-icon.png'),
-                  radius: 40,
-                ),
-                SizedBox(height: 10),
-                Text(
-                  "Guest User",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'PTSerif'
-                  ),
-                ),
-              ],
+
+          GestureDetector(
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage()),
             ),
-          ),
+            child: Align(
+              alignment: Alignment.center,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircleAvatar(
+                    backgroundImage: AssetImage('assets/sidenav/guest-icon.png'),
+                    radius: 40,
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    "Guest User",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'PTSerif',
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          )
         ],
       ),
     );
