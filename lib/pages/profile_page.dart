@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:bloom_and_bliss/sidenav.dart';
 import 'package:bloom_and_bliss/constants/colors.dart';
-
-void main() {
-  runApp(const ProfilePage());
-}
+import "../models/user_model.dart";
 
 class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
+  final User user;
+  const ProfilePage({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +32,7 @@ class ProfilePage extends StatelessWidget {
             iconTheme: const IconThemeData(color: AppColors.pink),
           ),
         ),
-        drawer: Sidenav(),
+        drawer: Sidenav(user: user,),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
           child: Column(
@@ -50,7 +48,7 @@ class ProfilePage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              const ProfileCard(),
+              ProfileCard(user: user),
             ],
           ),
         ),
@@ -60,7 +58,8 @@ class ProfilePage extends StatelessWidget {
 }
 
 class ProfileCard extends StatelessWidget {
-  const ProfileCard({super.key});
+    final User user;
+  const ProfileCard({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -79,14 +78,13 @@ class ProfileCard extends StatelessWidget {
               backgroundImage: AssetImage('assets/sidenav/guest-icon.png'),
               radius: 50,
             ),
-            const SizedBox(height: 20),
-            _buildTextField(label: "Name", hintText: "Enter your name"),
-            const SizedBox(height: 10),
-            _buildTextField(label: "Email", hintText: "Enter your email"),
-            const SizedBox(height: 10),
-            _buildTextField(label: "Number", hintText: "Enter your number"),
-            const SizedBox(height: 10),
-            _buildTextField(label: "Password", hintText: "Enter your password", obscureText: true),
+            Column(
+              children: [
+                Text('${user.fullName}'),
+                Text('${user.email}'),
+                Text('${user.phoneNumber}'),
+              ],
+            ),
             const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,

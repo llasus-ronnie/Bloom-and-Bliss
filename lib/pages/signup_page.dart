@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:bloom_and_bliss/main.dart';
 import 'package:bloom_and_bliss/constants/colors.dart';
+import '../models/user_model.dart';
+import "./profile_page.dart";
 
 void main() {
-  runApp(const SignUpPage());
+  runApp(SignUpPage());
 }
 
 class SignUpPage extends StatelessWidget {
+  
   const SignUpPage({super.key});
 
   @override
@@ -61,7 +64,7 @@ class SignUpPage extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(height: 20),
-                              const SignUpForm(),
+                              const SignUpForm(user: user,),
                             ],
                           ),
                         ),
@@ -79,7 +82,8 @@ class SignUpPage extends StatelessWidget {
 }
 
 class SignUpForm extends StatefulWidget {
-  const SignUpForm({super.key});
+  final User user;
+  const SignUpForm({super.key, required this.user});
 
   @override
   _SignUpFormState createState() => _SignUpFormState();
@@ -88,17 +92,34 @@ class SignUpForm extends StatefulWidget {
 class _SignUpFormState extends State<SignUpForm> {
   final _formKey = GlobalKey<FormState>();
 
+  final TextEditingController fullNameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
+
+  void addUser (){
+    User user = User(
+      fullName: fullNameController.text, 
+      email: emailController.text,
+      password: passwordController.text,
+      phoneNumber: int.parse(phoneController.text),
+      );
+
+      Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfilePage(user: user)));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
       key: _formKey,
       child: Column(
         children: [
-          buildTextField("Full Name", Icons.person),
-          buildTextField("Email", Icons.email),
-          buildTextField("Phone Number", Icons.phone),
-          buildTextField("Password", Icons.lock, obscureText: true),
-          buildTextField("Confirm Password", Icons.lock, obscureText: true),
+          buildTextField("Full Name", Icons.person, fullNameController),
+          buildTextField("Email", Icons.email, emailController, isEmail: true),
+          buildTextField("Phone Number", Icons.phone, phoneController),
+          buildTextField("Password", Icons.lock, passwordController, obscureText: true),
+          buildTextField("Confirm Password", Icons.lock, confirmPasswordController, obscureText: true),
           const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -106,7 +127,7 @@ class _SignUpFormState extends State<SignUpForm> {
               Expanded(
                 child: ElevatedButton(
                   onPressed: () => Navigator.push(
-                      context, MaterialPageRoute(builder: (context) => MyApp())),
+                      context, MaterialPageRoute(builder: (context) => MyApp(user: user,))),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.grey[400],
                     shape: RoundedRectangleBorder(
@@ -122,6 +143,7 @@ class _SignUpFormState extends State<SignUpForm> {
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       // Process sign-up
+                      addUser();
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -140,10 +162,11 @@ class _SignUpFormState extends State<SignUpForm> {
     );
   }
 
-  Widget buildTextField(String labelText, IconData icon, {bool obscureText = false}) {
+  Widget buildTextField(String labelText, IconData icon, TextEditingController controller, {bool obscureText = false, bool isEmail = false}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 15),
       child: TextFormField(
+        controller: controller,
         obscureText: obscureText,
         decoration: InputDecoration(
           filled: true,
@@ -156,12 +179,18 @@ class _SignUpFormState extends State<SignUpForm> {
             borderSide: BorderSide.none,
           ),
         ),
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return "$labelText is required";
-          }
-          return null;
-        },
+        // validator: (value) {
+        //   if (value == null || value.isEmpty) {
+        //     return "$labelText is required";
+        //   }
+        //   if (isEmail && !RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").hasMatch(value)) {
+        //     return "Enter a valid email";
+        //   }
+        //   if (labelText == "Confirm Password" && value != passwordController.text) {
+        //     return "Passwords do not match";
+        //   }
+        //   return null;
+        // },
       ),
     );
   }
