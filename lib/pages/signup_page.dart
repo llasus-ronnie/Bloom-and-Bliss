@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:bloom_and_bliss/main.dart';
 import 'package:bloom_and_bliss/constants/colors.dart';
-import '../models/user_model.dart';
+import '../models/user.dart';
 import "./profile_page.dart";
 
 void main() {
-  runApp(SignUpPage());
+  runApp(SignUpPage(user: User(fullName: '', email: '', password: '', phoneNumber: 0)));
 }
 
 class SignUpPage extends StatelessWidget {
-  
-  const SignUpPage({super.key});
+  final User user;
+  const SignUpPage({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +64,7 @@ class SignUpPage extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(height: 20),
-                              const SignUpForm(user: user,),
+                              SignUpForm(),
                             ],
                           ),
                         ),
@@ -82,8 +82,7 @@ class SignUpPage extends StatelessWidget {
 }
 
 class SignUpForm extends StatefulWidget {
-  final User user;
-  const SignUpForm({super.key, required this.user});
+  const SignUpForm({super.key});
 
   @override
   _SignUpFormState createState() => _SignUpFormState();
@@ -106,11 +105,12 @@ class _SignUpFormState extends State<SignUpForm> {
       phoneNumber: int.parse(phoneController.text),
       );
 
-      Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfilePage(user: user)));
+      Navigator.push(context, MaterialPageRoute(builder: (context)=>MyApp(user: user)));
   }
 
   @override
   Widget build(BuildContext context) {
+    final User user;
     return Form(
       key: _formKey,
       child: Column(
@@ -126,8 +126,20 @@ class _SignUpFormState extends State<SignUpForm> {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () => Navigator.push(
-                      context, MaterialPageRoute(builder: (context) => MyApp(user: user,))),
+                  onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                      User user = User(
+                        fullName: fullNameController.text,
+                        email: emailController.text,
+                        password: passwordController.text,
+                        phoneNumber: int.parse(phoneController.text),
+                      );
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => MyApp(user: user)),
+                      );
+                    }
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.grey[400],
                     shape: RoundedRectangleBorder(

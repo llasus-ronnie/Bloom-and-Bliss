@@ -1,3 +1,4 @@
+import 'package:bloom_and_bliss/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:bloom_and_bliss/sidenav.dart';
 import 'constants/colors.dart';
@@ -6,15 +7,17 @@ import 'package:bloom_and_bliss/pages/details_page.dart';
 import 'package:bloom_and_bliss/pages/catalogue_page.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp(user: User(fullName: '', email: '', password: '', phoneNumber: 0)));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final User? user;
+  const MyApp({super.key, this.user});
 
   @override
   Widget build(BuildContext context) {
     const String apptitle = "Bloom & Bliss";
+    
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: apptitle,
@@ -33,7 +36,7 @@ class MyApp extends StatelessWidget {
             iconTheme: const IconThemeData(color: AppColors.pink),
           ),
         ),
-        drawer: Sidenav(),
+        drawer: Sidenav(user: user!,),
         body: SingleChildScrollView(
           child: Column(
             children: [
@@ -48,7 +51,7 @@ class MyApp extends StatelessWidget {
                   children: [
                     Container(
                       color: AppColors.yellow,
-                      child: ButtonRow(),
+                      child: ButtonRow(user: user!,),
                     ),
                     Container(
                       color: AppColors.pink,
@@ -234,7 +237,8 @@ class BodySection extends StatelessWidget {
 }
 
 class ButtonRow extends StatelessWidget {
-  const ButtonRow({super.key});
+  final User user;
+  const ButtonRow({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -243,11 +247,11 @@ class ButtonRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Expanded(child: _buildButton(context, Icons.storefront, "Shop Now", const CataloguePage())),
+          Expanded(child: _buildButton(context, Icons.storefront, "Shop Now",  CataloguePage(user: user,))),
           const SizedBox(width: 20),
-          Expanded(child: _buildButton(context, Icons.local_florist, "Our Flowers", const DetailsPage())),
+          Expanded(child: _buildButton(context, Icons.local_florist, "Our Flowers",  DetailsPage(user: user,))),
           const SizedBox(width: 20),
-          Expanded(child: _buildButton(context, Icons.shopping_cart, "Your Cart", const CartPage())),
+          Expanded(child: _buildButton(context, Icons.shopping_cart, "Your Cart",  CartPage(user: user,))),
         ],
       ),
     );

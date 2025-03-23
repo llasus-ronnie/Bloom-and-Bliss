@@ -3,13 +3,15 @@ import 'package:flutter/services.dart';
 import 'package:bloom_and_bliss/sidenav.dart';
 import 'package:bloom_and_bliss/main.dart';
 import 'package:bloom_and_bliss/constants/colors.dart';
+import 'package:bloom_and_bliss/models/user.dart';
 
 void main() {
-  runApp(const CartPage());
+  runApp(CartPage(user: User(fullName: '', email: '', password: '', phoneNumber: 0)));
 }
 
 class CartPage extends StatelessWidget {
-  const CartPage({super.key});
+  final User user;
+  const CartPage({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +32,7 @@ class CartPage extends StatelessWidget {
             iconTheme: IconThemeData(color: AppColors.pink),
           ),
         ),
-        drawer: Sidenav(),
+        drawer: Sidenav(user: user),
         body: SingleChildScrollView(
           child: Center(
             child: Container(
@@ -46,7 +48,7 @@ class CartPage extends StatelessWidget {
                   SizedBox(height: 40),
                   Center(child: CartSection()), // Ensure CartSection is centered
                   SizedBox(height: 40),
-                  Center(child: InputSection()), // Ensure InputSection is centered
+                  Center(child: InputSection(user: user,)), // Ensure InputSection is centered
                   SizedBox(height: 40),
                 ],
               ),
@@ -56,7 +58,7 @@ class CartPage extends StatelessWidget {
       ),
     );
   }
-  }
+}
 
 class TextTitleSection extends StatelessWidget {
   const TextTitleSection({super.key});
@@ -156,7 +158,8 @@ class CartItem extends StatelessWidget {
 }
 
 class InputSection extends StatelessWidget {
-  const InputSection({super.key});
+  final User user;
+  const InputSection({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -218,7 +221,7 @@ class InputSection extends StatelessWidget {
               CustomButton("Back", AppColors.green
                   , () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => MyApp()),
+                    MaterialPageRoute(builder: (context) => MyApp(user: user,)),
                   )),
             ],
           ),

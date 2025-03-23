@@ -6,13 +6,15 @@ import 'package:bloom_and_bliss/pages/details_page.dart';
 import 'package:bloom_and_bliss/pages/catalogue_page.dart';
 import 'package:bloom_and_bliss/pages/profile_page.dart';
 import 'package:bloom_and_bliss/constants/colors.dart';
+import './models/user.dart';
 
 void main() {
-  runApp(const Sidenav());
+  runApp(Sidenav(user: User(fullName: '', email: '', password: '', phoneNumber: 0)));
 }
 
 class Sidenav extends StatelessWidget {
-  const Sidenav({super.key});
+  final User user;
+  const Sidenav({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -20,9 +22,8 @@ class Sidenav extends StatelessWidget {
       backgroundColor: AppColors.beige,
       child: Column(
         children: [
-          DrwHeader(),
-          Expanded(child:
-            DrwListView()),
+          DrwHeader(user: user),
+          Expanded(child: DrwListView(user: user)),
         ],
       ),
     );
@@ -30,10 +31,14 @@ class Sidenav extends StatelessWidget {
 }
 
 class DrwHeader extends StatefulWidget {
+  final User user;
+  const DrwHeader({super.key, required this.user});
+
   @override
-  _Drwheader createState() => _Drwheader();
+  _DrwHeaderState createState() => _DrwHeaderState();
 }
-class _Drwheader extends State<DrwHeader> {
+
+class _DrwHeaderState extends State<DrwHeader> {
   @override
   Widget build(BuildContext context) {
     return DrawerHeader(
@@ -50,9 +55,10 @@ class _Drwheader extends State<DrwHeader> {
               },
             ),
           ),
-
           GestureDetector(
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage()),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ProfilePage(user: widget.user)),
             ),
             child: Align(
               alignment: Alignment.center,
@@ -65,7 +71,7 @@ class _Drwheader extends State<DrwHeader> {
                   ),
                   SizedBox(height: 10),
                   Text(
-                    "Guest User",
+                    '${widget.user.fullName}',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 14,
@@ -76,51 +82,63 @@ class _Drwheader extends State<DrwHeader> {
                 ],
               ),
             ),
-          )
+          ),
         ],
       ),
     );
   }
 }
+
 class DrwListView extends StatefulWidget {
+  final User user;
+  const DrwListView({super.key, required this.user});
+
   @override
-  _DrwListView createState() => _DrwListView();
+  _DrwListViewState createState() => _DrwListViewState();
 }
-class _DrwListView extends State<DrwListView> {
+
+class _DrwListViewState extends State<DrwListView> {
   @override
   Widget build(BuildContext context) {
-    return Padding(padding: EdgeInsets.all(10),
-    child: Container(
-      child: Column(
-        children: [
-          ListTile(
-            title: Text("Home", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
-            leading: Icon(Icons.home, color: AppColors.pink),
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => MyApp())),
-          ),
-          ListTile(
-            title: Text("Sign Up", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
-            leading: Icon(Icons.person, color: AppColors.pink),
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpPage())),
-          ),
-          ListTile(
-            title: Text("Your Cart", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
-            leading: Icon(Icons.shopping_cart, color: AppColors.pink),
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => CartPage())),
-          ),
-          ListTile(
-            title: Text("Our Flowers", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
-            leading: Icon(Icons.local_florist, color: AppColors.pink),
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => DetailsPage())),
-          ),
-          ListTile(
-            title: Text("Shop Catalogue", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
-            leading: Icon(Icons.apps, color: AppColors.pink),
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => CataloguePage())),
-          ),
-        ],
+    return Padding(
+      padding: EdgeInsets.all(10),
+      child: Container(
+        child: Column(
+          children: [
+            ListTile(
+              title: Text("Home", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
+              leading: Icon(Icons.home, color: AppColors.pink),
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => MyApp(user: widget.user,))),
+            ),
+            ListTile(
+              title: Text("Sign Up", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
+              leading: Icon(Icons.person, color: AppColors.pink),
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpPage(user: widget.user))),
+            ),
+            ListTile(
+              title: Text("Your Cart", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
+              leading: Icon(Icons.shopping_cart, color: AppColors.pink),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CartPage(user: widget.user)),
+              ),
+            ),
+            ListTile(
+              title: Text("Our Flowers", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
+              leading: Icon(Icons.local_florist, color: AppColors.pink),
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => DetailsPage(user: widget.user,))),
+            ),
+            ListTile(
+              title: Text("Shop Catalogue", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
+              leading: Icon(Icons.apps, color: AppColors.pink),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CataloguePage(user: widget.user)),
+              ),
+            ),
+          ],
+        ),
       ),
-    ),
     );
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:bloom_and_bliss/sidenav.dart';
 import 'package:bloom_and_bliss/constants/colors.dart';
-import "../models/user_model.dart";
+import "../models/user.dart";
 
 class ProfilePage extends StatelessWidget {
   final User user;

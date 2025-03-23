@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:bloom_and_bliss/sidenav.dart';
 import 'package:bloom_and_bliss/main.dart';
 import 'package:bloom_and_bliss/constants/colors.dart';
-
+import 'package:bloom_and_bliss/models/user.dart';
 
 void main() {
-  runApp(const DetailsPage());
+  runApp(DetailsPage(user: User(fullName: '', email: '', password: '', phoneNumber: 0)));
 }
 
 class DetailsPage extends StatelessWidget {
-  const DetailsPage({super.key});
+  final User user;
+  const DetailsPage({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -29,11 +30,11 @@ class DetailsPage extends StatelessWidget {
               ),
             ),
             iconTheme: IconThemeData(
-                color: AppColors.pink
+              color: AppColors.pink,
             ),
           ),
         ),
-        drawer: Sidenav(),
+        drawer: Sidenav(user: user),
         body: SingleChildScrollView(
           child: Container(
             alignment: Alignment.center,
@@ -45,10 +46,10 @@ class DetailsPage extends StatelessWidget {
                     children: [
                       TextTitleSection(),
                       BodySection(),
-                      ButtonFieldSection()
+                      ButtonFieldSection(user: user,),
                     ],
-                  )
-                )
+                  ),
+                ),
               ],
             ),
           ),
@@ -57,7 +58,6 @@ class DetailsPage extends StatelessWidget {
     );
   }
 }
-
 class TextTitleSection extends StatelessWidget {
   const TextTitleSection({super.key});
 
@@ -254,7 +254,8 @@ class _BodySectionState extends State<BodySection> {
 }
 
 class ButtonFieldSection extends StatelessWidget {
-  const ButtonFieldSection({super.key});
+  final User user;
+  const ButtonFieldSection({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -275,7 +276,7 @@ class ButtonFieldSection extends StatelessWidget {
               ),
               onPressed: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => MyApp()),
+                MaterialPageRoute(builder: (context) => MyApp(user: user,)),
               ),
               child: Text(
                 "Back",

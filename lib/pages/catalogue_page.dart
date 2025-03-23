@@ -3,14 +3,16 @@ import 'package:bloom_and_bliss/sidenav.dart';
 import 'package:bloom_and_bliss/main.dart';
 import 'dart:ui';
 import 'package:bloom_and_bliss/constants/colors.dart';
+import "../models/user.dart";
 
 
 void main() {
-  runApp(const CataloguePage());
+  runApp(CataloguePage(user: User(fullName: '', email: '', password: '', phoneNumber: 0)));
 }
 
 class CataloguePage extends StatelessWidget {
-  const CataloguePage ({super.key});
+  final User user;
+  const CataloguePage ({super.key, required this.user});
 
   // This widget is the root of your application.
   @override
@@ -35,7 +37,7 @@ class CataloguePage extends StatelessWidget {
             ),
           ),
         ),
-        drawer: Sidenav(),
+        drawer: Sidenav(user: user,),
         body: SingleChildScrollView(
           child: Container(
           color: AppColors.beige,
@@ -47,7 +49,7 @@ class CataloguePage extends StatelessWidget {
                 ButtonRowFilter(),
                 SizedBox(height: 20),
                 FlowerGrid(),
-                ButtonFieldSection()
+                ButtonFieldSection(user: user,)
               ]
           ),
         ),
@@ -258,7 +260,8 @@ class ButtonRowFilter extends StatelessWidget {
 }
 
 class ButtonFieldSection extends StatelessWidget {
-  const ButtonFieldSection({super.key});
+  final User user;
+  const ButtonFieldSection({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -279,7 +282,7 @@ class ButtonFieldSection extends StatelessWidget {
               ),
               onPressed: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => MyApp()),
+                MaterialPageRoute(builder: (context) => MyApp(user: user,)),
               ),
               child: Text(
                 "Back",
