@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:bloom_and_bliss/sidenav.dart';
 import 'package:bloom_and_bliss/constants/colors.dart';
-import "../models/user.dart";
+import '../models/user.dart';
+import 'edit_profile_page.dart';
+import 'signup_page.dart';
 
 class ProfilePage extends StatelessWidget {
   final User user;
@@ -9,48 +11,40 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const String apptitle = "Bloom & Bliss";
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: apptitle,
-      theme: ThemeData(
-        fontFamily: 'Recoleta',
+    return Scaffold(
+      backgroundColor: AppColors.pink,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(80),
+        child: AppBar(
+          backgroundColor: AppColors.beige,
+          centerTitle: true,
+          flexibleSpace: Center(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 10, bottom: 5),
+              child: Image.asset("assets/sidenav/bnb-logo.png", height: 70),
+            ),
+          ),
+          iconTheme: const IconThemeData(color: AppColors.pink),
+        ),
       ),
-      home: Scaffold(
-        backgroundColor: AppColors.pink,
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(80),
-          child: AppBar(
-            backgroundColor: AppColors.beige,
-            centerTitle: true,
-            flexibleSpace: Center(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 10, bottom: 5),
-                child: Image.asset("assets/sidenav/bnb-logo.png", height: 70),
+      drawer: Sidenav(user: user),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const Text(
+              "Your Profile",
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Recoleta',
+                color: AppColors.beige,
               ),
             ),
-            iconTheme: const IconThemeData(color: AppColors.pink),
-          ),
-        ),
-        drawer: Sidenav(user: user,),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Text(
-                "Your Profile",
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Recoleta',
-                  color: AppColors.beige,
-                ),
-              ),
-              const SizedBox(height: 20),
-              ProfileCard(user: user),
-            ],
-          ),
+            const SizedBox(height: 20),
+            ProfileCard(user: user),
+          ],
         ),
       ),
     );
@@ -58,8 +52,44 @@ class ProfilePage extends StatelessWidget {
 }
 
 class ProfileCard extends StatelessWidget {
-    final User user;
+  final User user;
   const ProfileCard({super.key, required this.user});
+
+  void _confirmDelete(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Delete Account"),
+          content: const Text("Are you sure you want to delete your account? This action cannot be undone."),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text("Cancel", style: TextStyle(color: Colors.grey)),
+            ),
+            TextButton(
+              onPressed: () {
+                _deleteAccount(context);
+              },
+              child: const Text("Delete", style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _deleteAccount(BuildContext context) {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SignUpPage(user: User(fullName: '', email: '', password: '', phoneNumber: 0)),
+      ),
+          (route) => false,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +125,9 @@ class ProfileCard extends StatelessWidget {
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    _confirmDelete(context);
+                  },
                   child: const Text(
                     "Delete Account",
                     style: TextStyle(fontFamily: 'Recoleta', fontWeight: FontWeight.bold),
@@ -107,9 +139,14 @@ class ProfileCard extends StatelessWidget {
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => EditProfilePage(user: user)),
+                    );
+                  },
                   child: const Text(
-                    "Save",
+                    "Update Profile",
                     style: TextStyle(fontFamily: 'Recoleta', fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -118,36 +155,6 @@ class ProfileCard extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildTextField({required String label, required String hintText, bool obscureText = false}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'Recoleta',
-            color: AppColors.pink,
-          ),
-        ),
-        const SizedBox(height: 5),
-        TextField(
-          obscureText: obscureText,
-          decoration: InputDecoration(
-            hintText: hintText,
-            hintStyle: const TextStyle(fontFamily: 'Recoleta', color: AppColors.black),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: AppColors.pink),
-            ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-          ),
-        ),
-      ],
     );
   }
 }
