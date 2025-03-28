@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "664874135531",
+    "project_id": "bloom-and-bliss-4itd",
+    "storage_bucket": "bloom-and-bliss-4itd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:664874135531:android:7624b3c5d73c868bb0b3ae",
+        "android_client_info": {
+          "package_name": "com.example.bloom_and_bliss"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCAWpyQIYVZ-gWXxudqOWsrfUuDVw5d69k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

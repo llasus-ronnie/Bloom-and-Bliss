@@ -5,8 +5,14 @@ import 'constants/colors.dart';
 import 'package:bloom_and_bliss/pages/cart_page.dart';
 import 'package:bloom_and_bliss/pages/details_page.dart';
 import 'package:bloom_and_bliss/pages/catalogue_page.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-void main() {
+
+void main() async {
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(MyApp(user: User(fullName: '', email: '', password: '', phoneNumber: 0)));
 }
 
