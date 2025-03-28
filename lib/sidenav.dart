@@ -71,7 +71,7 @@ class _DrwHeaderState extends State<DrwHeader> {
                   ),
                   SizedBox(height: 10),
                   Text(
-                    '${widget.user.fullName}',
+                    '${(widget.user.fullName?.isNotEmpty ?? false) ? widget.user.fullName : "Guest User"}',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 14,

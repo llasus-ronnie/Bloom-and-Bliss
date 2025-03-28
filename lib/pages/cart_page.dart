@@ -3,10 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:bloom_and_bliss/sidenav.dart';
 import 'package:bloom_and_bliss/main.dart';
 import 'package:bloom_and_bliss/constants/colors.dart';
-import 'package:bloom_and_bliss/models/user.dart';
+import '../../models/user.dart';
+
 
 void main() {
-  runApp(CartPage(user: User(fullName: '', email: '', password: '', phoneNumber: 0)));
+  runApp( CartPage(user: User(fullName: '', email: '', password: '', phoneNumber: 0)));
 }
 
 class CartPage extends StatelessWidget {
@@ -32,7 +33,7 @@ class CartPage extends StatelessWidget {
             iconTheme: IconThemeData(color: AppColors.pink),
           ),
         ),
-        drawer: Sidenav(user: user),
+        drawer: Sidenav(user: user,),
         body: SingleChildScrollView(
           child: Center(
             child: Container(
@@ -48,7 +49,7 @@ class CartPage extends StatelessWidget {
                   SizedBox(height: 40),
                   Center(child: CartSection()), // Ensure CartSection is centered
                   SizedBox(height: 40),
-                  Center(child: InputSection(user: user,)), // Ensure InputSection is centered
+                  Center(child: InputSection()), // Ensure InputSection is centered
                   SizedBox(height: 40),
                 ],
               ),
@@ -157,17 +158,94 @@ class CartItem extends StatelessWidget {
   }
 }
 
-class InputSection extends StatelessWidget {
-  final User user;
-  const InputSection({super.key, required this.user});
+class InputSection extends StatefulWidget {
+  const InputSection({super.key});
+
+  @override
+  _InputSectionState createState() => _InputSectionState();
+}
+
+class _InputSectionState extends State<InputSection> {
+  final TextEditingController addressController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController additionalInfoController = TextEditingController();
+  final TextEditingController zipController = TextEditingController();
+  final TextEditingController cityController = TextEditingController();
+  final TextEditingController regionController = TextEditingController();
+
+  void showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: Colors.red),
+    );
+  }
+
+  void placeOrder() {
+    if (addressController.text.isEmpty ||
+        nameController.text.isEmpty ||
+        phoneController.text.isEmpty ||
+        zipController.text.isEmpty) {
+      showError("All fields are required");
+      return;
+    }
+
+    if (phoneController.text.length < 12) {
+      showError("Phone number must be at least 12 digits");
+      return;
+    }
+
+    if (zipController.text.length > 4) {
+      showError("Zip code cannot exceed 4 characters");
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        actionsAlignment: MainAxisAlignment.center,
+        title: Text(
+          "Confirm Order",
+          style: TextStyle(fontFamily: 'Recoleta', fontSize: 20, fontWeight: FontWeight.bold),
+          textAlign: TextAlign.center,
+        ),
+        content: Text(
+          "Are you sure you want to place the order?",
+          style: TextStyle(fontFamily: 'Recoleta', fontSize: 16),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: Text(
+              "Cancel",
+              style: TextStyle(fontFamily: 'Recoleta', fontSize: 16),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text("Order placed successfully!", style: TextStyle(fontFamily: 'Recoleta')), backgroundColor: Colors.green),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.pink,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+            child: Text(
+              "Confirm",
+              style: TextStyle(fontFamily: 'Recoleta', fontSize: 16, color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    // double containerWidth = screenWidth > 700 ? 640 : screenWidth * 0.9;
-
     return Container(
-      // width: containerWidth,
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -190,39 +268,34 @@ class InputSection extends StatelessWidget {
             ),
           ),
           SizedBox(height: 15),
-          CustomTextField("Enter address...", Icons.home),
+          CustomTextField("Enter address...", Icons.home, controller: addressController),
           SizedBox(height: 15),
           Row(
             children: [
-              Expanded(child: CustomTextField("Recipient Name", Icons.person)),
+              Expanded(child: CustomTextField("Recipient Name", Icons.person, controller: nameController)),
               SizedBox(width: 20),
-              Expanded(child: CustomTextField("Phone Number", Icons.phone, isNumeric: true)),
+              Expanded(child: CustomTextField("Phone Number", Icons.phone, controller: phoneController, isNumeric: true, maxLength: 12)),
             ],
           ),
           SizedBox(height: 15),
-          CustomTextField("Additional Information", Icons.info),
+          CustomTextField("Additional Information", Icons.info, controller: additionalInfoController),
           SizedBox(height: 15),
           Row(
             children: [
-              Expanded(child: CustomTextField("Zip Code", Icons.local_post_office, isNumeric: true)),
+              Expanded(child: CustomTextField("Zip Code", Icons.local_post_office, controller: zipController, isNumeric: true, maxLength: 4)),
               SizedBox(width: 15),
-              Expanded(child: CustomTextField("City", Icons.location_city)),
+              Expanded(child: CustomTextField("City", Icons.location_city, controller: cityController)),
               SizedBox(width: 15),
-              Expanded(child: CustomTextField("Region", Icons.map)),
+              Expanded(child: CustomTextField("Region", Icons.map, controller: regionController)),
             ],
           ),
           SizedBox(height: 25),
-
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CustomButton("Place Order", AppColors.pink, () {}),
+              CustomButton("Place Order", AppColors.pink, placeOrder),
               SizedBox(width: 20),
-              CustomButton("Back", AppColors.green
-                  , () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => MyApp(user: user,)),
-                  )),
+              CustomButton("Back", AppColors.green, () => Navigator.push(context, MaterialPageRoute(builder: (context) => MyApp()))),
             ],
           ),
         ],
@@ -235,18 +308,30 @@ class CustomTextField extends StatelessWidget {
   final String labelText;
   final IconData icon;
   final bool isNumeric;
+  final TextEditingController controller;
+  final int? maxLength;
+  final bool restrictSpecial;
 
-  const CustomTextField(this.labelText, this.icon, {this.isNumeric = false, super.key});
+
+
+  const CustomTextField(
+      this.labelText,
+      this.icon, {required this.controller, this.isNumeric = false, this.maxLength, this.restrictSpecial = false, super.key});
 
   @override
   Widget build(BuildContext context) {
     return TextField(
+      controller: controller,
       keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
-      inputFormatters: isNumeric ? [FilteringTextInputFormatter.digitsOnly] : null,
+      inputFormatters: [
+        if (isNumeric) FilteringTextInputFormatter.digitsOnly,
+        if (restrictSpecial) FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z0-9 ]+$')),
+        if (maxLength != null) LengthLimitingTextInputFormatter(maxLength),
+      ],
       decoration: InputDecoration(
         prefixIcon: Icon(icon, color: AppColors.pink),
         labelText: labelText,
-        labelStyle: TextStyle(color: AppColors.pink),
+        labelStyle: TextStyle(color: AppColors.pink, fontFamily: 'Recoleta'),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(50),
           borderSide: BorderSide(color: AppColors.pink, width: 2),
@@ -284,7 +369,7 @@ class CustomButton extends StatelessWidget {
         onPressed: onPressed,
         child: Text(
           text,
-          style: TextStyle(fontSize: 18, color: Colors.white, fontFamily: 'Recoleta', fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 15, color: Colors.white, fontFamily: 'Recoleta', fontWeight: FontWeight.bold),
         ),
       ),
     );

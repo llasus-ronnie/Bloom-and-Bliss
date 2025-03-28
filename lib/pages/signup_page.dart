@@ -174,7 +174,12 @@ class _SignUpFormState extends State<SignUpForm> {
     );
   }
 
-  Widget buildTextField(String labelText, IconData icon, TextEditingController controller, {bool obscureText = false, bool isEmail = false}) {
+  Widget buildTextField(
+      String labelText,
+      IconData icon,
+      TextEditingController controller,
+      {bool obscureText = false, bool isEmail = false}
+      ) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 15),
       child: TextFormField(
@@ -191,18 +196,23 @@ class _SignUpFormState extends State<SignUpForm> {
             borderSide: BorderSide.none,
           ),
         ),
-        // validator: (value) {
-        //   if (value == null || value.isEmpty) {
-        //     return "$labelText is required";
-        //   }
-        //   if (isEmail && !RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").hasMatch(value)) {
-        //     return "Enter a valid email";
-        //   }
-        //   if (labelText == "Confirm Password" && value != passwordController.text) {
-        //     return "Passwords do not match";
-        //   }
-        //   return null;
-        // },
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return "$labelText is required";
+          }
+          if (isEmail && !RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").hasMatch(value)) {
+            return "Enter a valid email";
+          }
+          if (labelText == "Confirm Password" && value != passwordController.text) {
+            return "Passwords do not match";
+          }
+          return null;
+        },
+        onChanged: (value) {
+          setState(() {
+            _formKey.currentState!.validate();
+          });
+        },
       ),
     );
   }
