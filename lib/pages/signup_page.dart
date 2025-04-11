@@ -3,6 +3,9 @@ import 'package:bloom_and_bliss/main.dart';
 import 'package:bloom_and_bliss/constants/colors.dart';
 import '../models/user.dart';
 import "./profile_page.dart";
+import 'package:firebase_core/firebase_core.dart';
+import '../firebase_options.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() {
   runApp(SignUpPage(user: User(fullName: '', email: '', password: '', phoneNumber: 0)));
@@ -89,6 +92,7 @@ class SignUpForm extends StatefulWidget {
 }
 
 class _SignUpFormState extends State<SignUpForm> {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController fullNameController = TextEditingController();
@@ -97,15 +101,65 @@ class _SignUpFormState extends State<SignUpForm> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
 
-  void addUser (){
-    User user = User(
-      fullName: fullNameController.text, 
-      email: emailController.text,
-      password: passwordController.text,
-      phoneNumber: int.parse(phoneController.text),
+  void addUser() async {
+    try {
+      await _firestore.collection('users').add({
+        'fullName': fullNameController.text,
+        'email': emailController.text,
+        'password': passwordController.text,
+        'phoneNumber': int.parse(phoneController.text),
+      });
+
+      print("Data added successfully!");
+
+
+      User user = User(
+        fullName: fullNameController.text,
+        email: emailController.text,
+        password: passwordController.text,
+        phoneNumber: int.parse(phoneController.text),
       );
 
-      Navigator.push(context, MaterialPageRoute(builder: (context)=>MyApp(user: user)));
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => MyApp(user: user)),
+      );
+    } catch (e) {
+      print("Error adding data: $e");
+    }
+  }
+
+
+  void getUserInfo(String userName) async {
+
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .get();
+
+    for (var doc in querySnapshot.docs) {
+      var data = doc.data() as Map<String, dynamic>;
+
+      if (data['fullName'] == userName) {
+        print("Found Document ID: ${doc.id}");
+        print("Data: $data");
+        return;
+      }
+    }
+
+    print("No user found with name: ");
+  }
+
+  void updateDataUser(String docId) async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(docId)
+        .update({
+      'fullName': 'Olivia Rodrigo',
+      'email': 'liv@gmail.com',
+      'password': 'password123',
+      'phoneNumber': 9876543210,
+    });
   }
 
   @override
@@ -156,6 +210,8 @@ class _SignUpFormState extends State<SignUpForm> {
                     if (_formKey.currentState!.validate()) {
                       // Process sign-up
                       addUser();
+                      // getUserInfo(fullNameController.text);
+                      // updateDataUser("ucwia6EvXbM9kevf8XDX");
                     }
                   },
                   style: ElevatedButton.styleFrom(
