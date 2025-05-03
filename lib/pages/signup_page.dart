@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:bloom_and_bliss/main.dart';
 import 'package:bloom_and_bliss/constants/colors.dart';
-import '../models/user.dart';
+import '../models/user.dart'; // Your custom User model
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth; // Alias the Firebase User class
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() {
@@ -57,10 +58,10 @@ class SignUpPage extends StatelessWidget {
                               const Text(
                                 "Create an Account",
                                 style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                  fontFamily: 'Recoleta'
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                    fontFamily: 'Recoleta'
                                 ),
                               ),
                               const SizedBox(height: 20),
@@ -89,6 +90,7 @@ class SignUpForm extends StatefulWidget {
 }
 
 class _SignUpFormState extends State<SignUpForm> {
+  final firebase_auth.FirebaseAuth _auth = firebase_auth.FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final _formKey = GlobalKey<FormState>();
 
@@ -98,18 +100,22 @@ class _SignUpFormState extends State<SignUpForm> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
 
-  void addUser() async {
+  Future<void> signUp() async {
     try {
-      await _firestore.collection('users').add({
+      // Create user with Firebase Auth
+      firebase_auth.UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+        email: emailController.text,
+        password: passwordController.text,
+      );
+
+      // After creating the user, save additional information in Firestore
+      await _firestore.collection('users').doc(userCredential.user!.uid).set({
         'fullName': fullNameController.text,
         'email': emailController.text,
-        'password': passwordController.text,
         'phoneNumber': int.parse(phoneController.text),
       });
 
-      print("Data added successfully!");
-
-
+      // Navigate to the app's main screen with custom User model
       User user = User(
         fullName: fullNameController.text,
         email: emailController.text,
@@ -117,51 +123,26 @@ class _SignUpFormState extends State<SignUpForm> {
         phoneNumber: int.parse(phoneController.text),
       );
 
-
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => MyApp(user: user)),
+        MaterialPageRoute(builder: (context) => MyApp()),
       );
-    } catch (e) {
-      print("Error adding data: $e");
-    }
-  }
-
-
-  void getUserInfo(String userName) async {
-
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .get();
-
-    for (var doc in querySnapshot.docs) {
-      var data = doc.data() as Map<String, dynamic>;
-
-      if (data['fullName'] == userName) {
-        print("Found Document ID: ${doc.id}");
-        print("Data: $data");
-        return;
+    } on firebase_auth.FirebaseAuthException catch (e) {
+      String errorMessage = '';
+      if (e.code == 'weak-password') {
+        errorMessage = 'The password is too weak.';
+      } else if (e.code == 'email-already-in-use') {
+        errorMessage = 'The account already exists for that email.';
       }
+      // Show error message to user
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(errorMessage)));
+    } catch (e) {
+      print("Error: $e");
     }
-
-    print("No user found with name: ");
-  }
-
-  void updateDataUser(String docId) async {
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(docId)
-        .update({
-      'fullName': 'Olivia Rodrigo',
-      'email': 'liv@gmail.com',
-      'password': 'password123',
-      'phoneNumber': 9876543210,
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final User user;
     return Form(
       key: _formKey,
       child: Column(
@@ -178,17 +159,8 @@ class _SignUpFormState extends State<SignUpForm> {
               Expanded(
                 child: ElevatedButton(
                   onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                      User user = User(
-                        fullName: fullNameController.text,
-                        email: emailController.text,
-                        password: passwordController.text,
-                        phoneNumber: int.parse(phoneController.text),
-                      );
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => MyApp(user: user)),
-                      );
+                    if (_formKey.currentState!.validate()) {
+                      Navigator.pop(context); // Going back to previous page
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -206,9 +178,7 @@ class _SignUpFormState extends State<SignUpForm> {
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       // Process sign-up
-                      addUser();
-                      // getUserInfo(fullNameController.text);
-                      // updateDataUser("ucwia6EvXbM9kevf8XDX");
+                      signUp();
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -253,18 +223,13 @@ class _SignUpFormState extends State<SignUpForm> {
           if (value == null || value.isEmpty) {
             return "$labelText is required";
           }
-          if (isEmail && !RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").hasMatch(value)) {
+          if (isEmail && !RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA0-9.-]+\.[a-zA-Z]{2,}$").hasMatch(value)) {
             return "Enter a valid email";
           }
           if (labelText == "Confirm Password" && value != passwordController.text) {
             return "Passwords do not match";
           }
           return null;
-        },
-        onChanged: (value) {
-          setState(() {
-            _formKey.currentState!.validate();
-          });
         },
       ),
     );

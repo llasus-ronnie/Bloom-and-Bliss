@@ -7,72 +7,141 @@ import 'package:bloom_and_bliss/pages/details_page.dart';
 import 'package:bloom_and_bliss/pages/catalogue_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(MyApp(user: User(fullName: '', email: '', password: '', phoneNumber: 0)));
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final User? user;
-  const MyApp({super.key, this.user});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     const String apptitle = "Bloom & Bliss";
-    
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: apptitle,
       home: Scaffold(
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(80),
-          child: AppBar(
-            backgroundColor: AppColors.beige,
-            centerTitle: true,
-            flexibleSpace: Center(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 10, bottom: 5),
-                child: Image.asset("assets/sidenav/bnb-logo.png", height: 70),
+        body: StreamBuilder<firebase_auth.User?>(
+          stream: firebase_auth.FirebaseAuth.instance.authStateChanges(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            }
+
+            if (snapshot.hasError) {
+              return Center(child: Text('Something went wrong!'));
+            }
+
+            if (snapshot.hasData) {
+              // Logged-in user: fetch Firestore data
+              return FutureBuilder<DocumentSnapshot>(
+                future: FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(snapshot.data!.uid)
+                    .get(),
+                builder: (context, userSnapshot) {
+                  if (userSnapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+
+                  if (userSnapshot.hasError) {
+                    return Center(child: Text('Something went wrong!'));
+                  }
+
+                  if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+                    return Center(child: Text('User data not found.'));
+                  }
+
+                  var userData = userSnapshot.data!.data() as Map<String, dynamic>;
+                  User user = User(
+                    fullName: userData['fullName'] ?? '',
+                    email: userData['email'] ?? '',
+                    password: '',
+                    phoneNumber: userData['phoneNumber'] ?? 0,
+                  );
+
+                  return MyHomePage(user: user);
+                },
+              );
+            } else {
+              // Guest user (not logged in)
+              User guestUser = User(
+                fullName: '',
+                email: '',
+                password: '',
+                phoneNumber: 0,
+              );
+              return MyHomePage(user: guestUser);
+            }
+          },
+        ),
+      ),
+    );
+  }
+}
+
+
+class MyHomePage extends StatelessWidget {
+  final User user;
+  const MyHomePage({super.key, required this.user});
+
+  @override
+  Widget build(BuildContext context) {
+    const String apptitle = "Bloom & Bliss";
+
+    return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(80),
+        child: AppBar(
+          backgroundColor: AppColors.beige,
+          centerTitle: true,
+          flexibleSpace: Center(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 10, bottom: 5),
+              child: Image.asset("assets/sidenav/bnb-logo.png", height: 70),
+            ),
+          ),
+          iconTheme: const IconThemeData(color: AppColors.pink),
+        ),
+      ),
+      drawer: Sidenav(user: user),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.9,
+              child: ImageCarousel(),
+            ),
+            Container(
+              alignment: Alignment.center,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    color: AppColors.yellow,
+                    child: ButtonRow(user: user),
+                  ),
+                  Container(
+                    color: AppColors.pink,
+                    child: Column(
+                      children: [
+                        TextTitleSection(),
+                        BodySection(),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
-            iconTheme: const IconThemeData(color: AppColors.pink),
-          ),
-        ),
-        drawer: Sidenav(user: user!,),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.9,
-                child: ImageCarousel(),
-              ),
-              Container(
-                alignment: Alignment.center,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      color: AppColors.yellow,
-                      child: ButtonRow(user: user!,),
-                    ),
-                    Container(
-                      color: AppColors.pink,
-                      child: Column(
-                        children: [
-                          TextTitleSection(),
-                          BodySection(),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+          ],
         ),
       ),
     );

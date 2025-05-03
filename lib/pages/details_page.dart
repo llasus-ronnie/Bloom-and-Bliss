@@ -276,7 +276,7 @@ class ButtonFieldSection extends StatelessWidget {
               ),
               onPressed: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => MyApp(user: user,)),
+                MaterialPageRoute(builder: (context) => MyApp()),
               ),
               child: Text(
                 "Back",

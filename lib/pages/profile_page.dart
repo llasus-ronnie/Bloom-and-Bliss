@@ -4,6 +4,8 @@ import 'package:bloom_and_bliss/constants/colors.dart';
 import '../models/user.dart';
 import 'edit_profile_page.dart';
 import 'signup_page.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ProfilePage extends StatelessWidget {
   final User user;
@@ -81,16 +83,36 @@ class ProfileCard extends StatelessWidget {
     );
   }
 
-  void _deleteAccount(BuildContext context) {
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(
-        builder: (context) => SignUpPage(user: User(fullName: '', email: '', password: '', phoneNumber: 0)),
-      ),
-          (route) => false,
-    );
-  }
+  void _deleteAccount(BuildContext context) async {
+    try {
+      final currentUser = firebase_auth.FirebaseAuth.instance.currentUser;
 
+      if (currentUser != null) {
+        // Delete user document from Firestore
+        await FirebaseFirestore.instance.collection('users').doc(currentUser.uid).delete();
+
+        // Delete user from Firebase Auth
+        await currentUser.delete();
+
+        // Navigate to SignUp page
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SignUpPage(
+              user: User(fullName: '', email: '', password: '', phoneNumber: 0),
+            ),
+          ),
+              (route) => false,
+        );
+      } else {
+        throw Exception('No user is currently signed in.');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to delete account: $e')),
+      );
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Card(

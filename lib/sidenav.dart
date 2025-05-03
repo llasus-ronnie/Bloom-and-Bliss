@@ -8,6 +8,7 @@ import 'package:bloom_and_bliss/pages/catalogue_page.dart';
 import 'package:bloom_and_bliss/pages/profile_page.dart';
 import 'package:bloom_and_bliss/constants/colors.dart';
 import './models/user.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 
 void main() {
   runApp(Sidenav(user: User(fullName: '', email: '', password: '', phoneNumber: 0)));
@@ -57,10 +58,14 @@ class _DrwHeaderState extends State<DrwHeader> {
             ),
           ),
           GestureDetector(
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ProfilePage(user: widget.user)),
-            ),
+            onTap: (widget.user.fullName?.isNotEmpty ?? false)
+                ? () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ProfilePage(user: widget.user)),
+              );
+            }
+                : null, // disables tap if guest
             child: Align(
               alignment: Alignment.center,
               child: Column(
@@ -99,28 +104,31 @@ class DrwListView extends StatefulWidget {
 }
 
 class _DrwListViewState extends State<DrwListView> {
+  bool get isGuest => widget.user.fullName.isEmpty;
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.all(10),
-      child: Container(
-        child: Column(
-          children: [
-            ListTile(
-              title: Text("Home", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
-              leading: Icon(Icons.home, color: AppColors.pink),
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => MyApp(user: widget.user,))),
-            ),
+      child: Column(
+        children: [
+          ListTile(
+            title: Text("Home", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
+            leading: Icon(Icons.home, color: AppColors.pink),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const MyApp())),
+          ),
+
+          // Only show Sign In and Sign Up if guest
+          if (isGuest) ...[
             ListTile(
               title: Text("Sign In", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
               leading: Icon(Icons.login, color: AppColors.pink),
               onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const SignInPage())),
             ),
-            ListTile(
-              title: Text("Sign Up", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
-              leading: Icon(Icons.person, color: AppColors.pink),
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpPage(user: widget.user))),
-            ),
+          ],
+
+          // Only show Cart if logged in
+          if (!isGuest)
             ListTile(
               title: Text("Your Cart", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
               leading: Icon(Icons.shopping_cart, color: AppColors.pink),
@@ -129,22 +137,38 @@ class _DrwListViewState extends State<DrwListView> {
                 MaterialPageRoute(builder: (context) => CartPage(user: widget.user)),
               ),
             ),
-            ListTile(
-              title: Text("Our Flowers", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
-              leading: Icon(Icons.local_florist, color: AppColors.pink),
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => DetailsPage(user: widget.user,))),
+
+          ListTile(
+            title: Text("Our Flowers", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
+            leading: Icon(Icons.local_florist, color: AppColors.pink),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => DetailsPage(user: widget.user))),
+          ),
+          ListTile(
+            title: Text("Shop Catalogue", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
+            leading: Icon(Icons.apps, color: AppColors.pink),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => CataloguePage(user: widget.user)),
             ),
+          ),
+
+          const Spacer(),
+
+          // Only show Logout if user is logged in
+          if (!isGuest)
             ListTile(
-              title: Text("Shop Catalogue", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
-              leading: Icon(Icons.apps, color: AppColors.pink),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => CataloguePage(user: widget.user)),
-              ),
+              title: Text("Logout", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
+              leading: Icon(Icons.logout, color: AppColors.pink),
+              onTap: () async {
+                await firebase_auth.FirebaseAuth.instance.signOut();
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => const MyApp()),
+                );
+              },
             ),
-          ],
-        ),
+        ],
       ),
     );
   }
 }
+
