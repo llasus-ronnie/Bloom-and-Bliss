@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:bloom_and_bliss/main.dart';
+import 'package:bloom_and_bliss/pages/signin_page.dart';
 import 'package:bloom_and_bliss/pages/signup_page.dart';
 import 'package:bloom_and_bliss/pages/cart_page.dart';
 import 'package:bloom_and_bliss/pages/details_page.dart';
@@ -109,6 +110,11 @@ class _DrwListViewState extends State<DrwListView> {
               title: Text("Home", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
               leading: Icon(Icons.home, color: AppColors.pink),
               onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => MyApp(user: widget.user,))),
+            ),
+            ListTile(
+              title: Text("Sign In", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
+              leading: Icon(Icons.login, color: AppColors.pink),
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const SignInPage())),
             ),
             ListTile(
               title: Text("Sign Up", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
