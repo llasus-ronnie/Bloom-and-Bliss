@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:bloom_and_bliss/main.dart';
 import 'package:bloom_and_bliss/constants/colors.dart';
 import '../models/user.dart';
-import "./profile_page.dart";
-import 'package:firebase_core/firebase_core.dart';
-import '../firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() {
@@ -246,7 +243,7 @@ class _SignUpFormState extends State<SignUpForm> {
           fillColor: Colors.white,
           labelText: labelText,
           labelStyle: const TextStyle(fontFamily: 'PTSerif'),
-          prefixIcon: Icon(icon, color: Colors.pink[300]),
+          prefixIcon: Icon(icon, color: AppColors.pink),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
             borderSide: BorderSide.none,
