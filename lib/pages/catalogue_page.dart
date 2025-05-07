@@ -4,15 +4,21 @@ import 'package:bloom_and_bliss/main.dart';
 import 'dart:ui';
 import 'package:bloom_and_bliss/constants/colors.dart';
 import "../models/user.dart";
+import "../models/cart.dart";
+import "../models/product.dart";
+import "../controller/cart_controller.dart";
+import 'package:firebase_core/firebase_core.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 
 void main() {
-  runApp(CataloguePage(user: User(fullName: '', email: '', password: '', phoneNumber: 0)));
+  runApp(CataloguePage(
+      user: User(fullName: '', email: '', password: '', phoneNumber: 0)));
 }
 
 class CataloguePage extends StatelessWidget {
   final User user;
-  const CataloguePage ({super.key, required this.user});
+  const CataloguePage({super.key, required this.user});
 
   // This widget is the root of your application.
   @override
@@ -32,29 +38,29 @@ class CataloguePage extends StatelessWidget {
                 child: Image.asset("assets/bnb-logo.png", height: 70),
               ),
             ),
-            iconTheme: IconThemeData(
-                color: AppColors.pink
-            ),
+            iconTheme: IconThemeData(color: AppColors.pink),
           ),
         ),
-        drawer: Sidenav(user: user,),
+        drawer: Sidenav(
+          user: user,
+        ),
         body: SingleChildScrollView(
           child: Container(
-          color: AppColors.beige,
-          child: Column(
-              children: [
-                SizedBox(height: 20),
-                CarouselView(),
-                SizedBox(height: 20),
-                ButtonRowFilter(),
-                SizedBox(height: 20),
-                FlowerGrid(),
-                ButtonFieldSection(user: user,)
-              ]
+            color: AppColors.beige,
+            child: Column(children: [
+              SizedBox(height: 20),
+              CarouselView(),
+              SizedBox(height: 20),
+              ButtonRowFilter(),
+              SizedBox(height: 20),
+              FlowerGrid(user: user,),
+              ButtonFieldSection(
+                user: user,
+              )
+            ]),
           ),
         ),
       ),
-    ),
     );
   }
 }
@@ -64,16 +70,15 @@ class TextTitleSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(padding: EdgeInsets.only(top: 70),
+    return Padding(
+      padding: EdgeInsets.only(top: 70),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text("Catalogue Page",
+          Text(
+            "Catalogue Page",
             style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.black
-            ),
+                fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
           ),
         ],
       ),
@@ -82,43 +87,63 @@ class TextTitleSection extends StatelessWidget {
 }
 
 class FlowerGrid extends StatelessWidget {
-  FlowerGrid({super.key});
+    final User user;
+
+  FlowerGrid({super.key, required this.user});
+  
 
   final List<Map<String, dynamic>> flowers = [
     {
-      "image": "https://www.redflowersngifts.com/cdn/shop/products/roses-bouquet-3-675845.jpg?v=1638706779",
+      "image":
+          "https://www.redflowersngifts.com/cdn/shop/products/roses-bouquet-3-675845.jpg?v=1638706779",
       "title": "Rose Bouquet",
       "rating": 4.5,
-      "price": "PHP550.00"
+      "price": 550.00
     },
     {
-      "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSSw7eCN14BX6Te1LHvLKdSLTsLSdJoWgDMdQ&s",
+      "image":
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSSw7eCN14BX6Te1LHvLKdSLTsLSdJoWgDMdQ&s",
       "title": "Tulip Mix",
       "rating": 4.2,
-      "price": "PHP480.00"
+      "price": 480.00
     },
     {
-      "image": "https://assets.florista.ph/uploads/product-pics/5005_88_5005.webp",
+      "image":
+          "https://assets.florista.ph/uploads/product-pics/5005_88_5005.webp",
       "title": "Sunflower Set",
       "rating": 4.8,
-      "price": "PHP450.00"
+      "price": 450.00
     },
     {
-      "image": "https://www.fnp.com/images/pr/philippines/l/v20220111163039/white-oriental-lilies-bouquet_1.jpg",
+      "image":
+          "https://www.fnp.com/images/pr/philippines/l/v20220111163039/white-oriental-lilies-bouquet_1.jpg",
       "title": "Lily Collection",
       "rating": 4.3,
-      "price": "PHP390.00"
+      "price": 390.00
     },
   ];
 
   @override
   Widget build(BuildContext context) {
+        final List<Product> products = List.generate(
+      flowers.length,
+      (index) {
+        return Product(
+          id: 'product$index', // Simple unique ID like 'product0', 'product1', etc.
+          name: flowers[index]["title"], // Product name (title)
+          price: flowers[index]["price"], // Price as a double
+        );
+      },
+    );
+    final cart = Cart( user: user); 
+    final cartController = CartController(cart, user);
+
     return Padding(
       padding: const EdgeInsets.all(10),
       child: GridView.builder(
         shrinkWrap: true,
         physics: NeverScrollableScrollPhysics(),
-        itemCount: flowers.length,
+        itemCount: products.length,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           crossAxisSpacing: 10,
@@ -126,7 +151,7 @@ class FlowerGrid extends StatelessWidget {
           childAspectRatio: 0.7, // Adjusted to keep proportions right
         ),
         itemBuilder: (context, index) {
-          final flower = flowers[index];
+          final product = products[index];
 
           return Card(
             color: Colors.white,
@@ -143,7 +168,7 @@ class FlowerGrid extends StatelessWidget {
                     width: double.infinity,
                     height: 80,
                     child: Image.network(
-                      flower["image"],
+                      flowers[index]["image"],
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -151,51 +176,66 @@ class FlowerGrid extends StatelessWidget {
 
                 /// Content Section (Fixed Layout)
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                    /// Title (Fixed Position)
-                    Text(
-                    flower["title"],
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, fontFamily: 'Recoleta'),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                      /// Title (Fixed Position)
+                      Text(
+                        product.name,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Recoleta'),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
 
-                  SizedBox(height: 5),
+                      SizedBox(height: 5),
 
-                  /// Rating Row (Fixed Position)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Icon(Icons.star, color: Colors.amber, size: 16),
-                      SizedBox(width: 5),
-                      Text("${flower["rating"]}", style: TextStyle(fontSize: 14, fontFamily: 'PTSerif')),
-                    ],
-                  ),
+                      /// Rating Row (Fixed Position)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Icon(Icons.star, color: Colors.amber, size: 16),
+                          SizedBox(width: 5),
+                          Text("${flowers[index]["rating"]}",
+                              style: TextStyle(
+                                  fontSize: 14, fontFamily: 'PTSerif')),
+                        ],
+                      ),
 
-                  SizedBox(height: 5),
+                      SizedBox(height: 5),
 
-                  /// Price (Fixed Position)
-                  Text(
-                    flower["price"],
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.green, fontFamily: 'Recoleta'),
-                  ),
+                      /// Price (Fixed Position)
+                      Text(
+                        product.price.toString(),
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.green,
+                            fontFamily: 'Recoleta'),
+                      ),
 
-                  SizedBox(height: 10),
+                      SizedBox(height: 10),
 
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                              cartController.addProduct(product);
+                          },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.pink,
                             foregroundColor: Colors.white,
-                            padding: EdgeInsets.symmetric(vertical: 8), // Fixed closing parenthesis
+                            padding: EdgeInsets.symmetric(
+                                vertical: 8), // Fixed closing parenthesis
                           ),
-                          child: Text("Add to Cart", style: TextStyle(fontSize: 12, fontFamily: 'Recoleta')),
+                          child: Text("Add to Cart",
+                              style: TextStyle(
+                                  fontSize: 12, fontFamily: 'Recoleta')),
                         ),
                       ),
                     ],
@@ -235,7 +275,6 @@ class ButtonRowFilter extends StatelessWidget {
         ),
       ),
     );
-
   }
 
   Widget _buildButton(String text) {
@@ -339,11 +378,18 @@ class _CarouselViewState extends State<CarouselView> {
 }
 
 enum ImageInfo {
-  image0('Valentines', 'Pink and white are the season colors', 'https://images.pexels.com/photos/4499854/pexels-photo-4499854.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'),
-  image1('Spring Sale', 'Spring Season is coming, Bulk orders are being accepted!', 'https://images.pexels.com/photos/27871590/pexels-photo-27871590/free-photo-of-a-person-holding-a-bouquet-of-pink-tulips.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'),
-  image2('Custom Bouquets', 'Made for you, by you.', 'https://images.pexels.com/photos/4270151/pexels-photo-4270151.jpeg?auto=compress&cs=tinysrgb&w=600&lazy=load'),
-  image3('Floral Photo-shoots', 'Because you are as pretty as our flowers', 'https://images.pexels.com/photos/15762173/pexels-photo-15762173/free-photo-of-a-woman-sitting-on-a-couch-holding-a-bouquet-of-flowers.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'),
-  image4('Dried Flowers','Gorgeous even withered', 'https://images.pexels.com/photos/4273434/pexels-photo-4273434.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
+  image0('Valentines', 'Pink and white are the season colors',
+      'https://images.pexels.com/photos/4499854/pexels-photo-4499854.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'),
+  image1(
+      'Spring Sale',
+      'Spring Season is coming, Bulk orders are being accepted!',
+      'https://images.pexels.com/photos/27871590/pexels-photo-27871590/free-photo-of-a-person-holding-a-bouquet-of-pink-tulips.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'),
+  image2('Custom Bouquets', 'Made for you, by you.',
+      'https://images.pexels.com/photos/4270151/pexels-photo-4270151.jpeg?auto=compress&cs=tinysrgb&w=600&lazy=load'),
+  image3('Floral Photo-shoots', 'Because you are as pretty as our flowers',
+      'https://images.pexels.com/photos/15762173/pexels-photo-15762173/free-photo-of-a-woman-sitting-on-a-couch-holding-a-bouquet-of-flowers.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'),
+  image4('Dried Flowers', 'Gorgeous even withered',
+      'https://images.pexels.com/photos/4273434/pexels-photo-4273434.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
 
   const ImageInfo(this.title, this.subtitle, this.url);
   final String title;
@@ -398,19 +444,19 @@ class HeroLayoutCard extends StatelessWidget {
                   children: <Widget>[
                     Text(
                       imageInfo.title,
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Recoleta'
-                      ),
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineSmall
+                          ?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Recoleta'),
                     ),
                     const SizedBox(height: 5),
                     Text(
                       imageInfo.subtitle,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.white,
-                        fontFamily: 'PTSerif'
-                      ),
+                          color: Colors.white, fontFamily: 'PTSerif'),
                     ),
                   ],
                 ),

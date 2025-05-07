@@ -1,4 +1,6 @@
-class  User {
+class User {
+  static int _counter = 0; 
+  final String id;
   final String fullName;
   final String email;
   final String password;
@@ -9,5 +11,5 @@ class  User {
     required this.email,
     required this.password,
     required this.phoneNumber,
-  });
+  }) : id = 'user_${_counter++}';
 }

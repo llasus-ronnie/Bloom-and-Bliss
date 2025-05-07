@@ -4,11 +4,15 @@ import 'package:bloom_and_bliss/sidenav.dart';
 import 'package:bloom_and_bliss/main.dart';
 import 'package:bloom_and_bliss/constants/colors.dart';
 import '../../models/user.dart';
+import '../../models/cart.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import "../controller/cart_controller.dart";
+import '../../models/cart_item.dart';
 
 void main() {
-  runApp(CartPage(user: User(fullName: '', email: '', password: '', phoneNumber: 0)));
+  runApp(CartPage(
+      user: User(fullName: '', email: '', password: '', phoneNumber: 0)));
 }
 
 class CartPage extends StatelessWidget {
@@ -48,7 +52,7 @@ class CartPage extends StatelessWidget {
                   SizedBox(height: 30),
                   TextTitleSection(),
                   SizedBox(height: 40),
-                  Center(child: CartSection()),
+                  Center(child: CartSection(user: user)),
                   SizedBox(height: 40),
                   InputSection(),
                 ],
@@ -82,58 +86,76 @@ class TextTitleSection extends StatelessWidget {
 }
 
 class CartSection extends StatelessWidget {
-  const CartSection({super.key});
+  final User user;
+  const CartSection({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Wrap(
-          spacing: 20,
-          runSpacing: 20,
-          alignment: WrapAlignment.center,
-          children: [
-            CartItem(imagePath: "assets/cart/flower-placeholder1.png", name: "Rose Bouquet", price: "PHP999.00"),
-            CartItem(imagePath: "assets/cart/flower-placeholder2.png", name: "Assorted Arrangement", price: "PHP1299.00"),
-          ],
+    // Create the Cart object using the User
+    final cart = Cart(user: user);
+
+    // Now pass the Cart object to the CartController
+    final cartController = CartController(cart, user);
+
+    return StreamBuilder<List<CartItem>>(
+      stream: cartController.getCartItems(), // Stream from Firestore
+      builder: (context, snapshot) {
+        // Check the connection state first
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+
+        // Check for errors in the snapshot
+        if (snapshot.hasError) {
+          print('Error: ${snapshot.error}');
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
+
+        // Check if data is null or empty
+        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return Center(child: Text('Your cart is empty.'));
+        }
+
+        // Ensure the data is not null before using it
+        var cartItems = snapshot.data!;
+
+        // Display the cart items
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            return Wrap(
+              spacing: 20,
+              runSpacing: 20,
+              alignment: WrapAlignment.center,
+              children: cartItems.map((cartItem) {
+                return CartItemWidget(
+                    cartItem: cartItem); // Pass the whole cartItem
+              }).toList(),
+            );
+          },
         );
       },
     );
   }
 }
 
-class CartItem extends StatelessWidget {
-  final String imagePath;
-  final String name;
-  final String price;
+class CartItemWidget extends StatelessWidget {
+  final CartItem cartItem; // Expecting the whole `CartItem` object
 
-  const CartItem({required this.imagePath, required this.name, required this.price, super.key});
+  const CartItemWidget({super.key, required this.cartItem});
+ // Use cartItem here
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double itemWidth = screenWidth * 0.4;
-    if (itemWidth > 400) itemWidth = 400;
-
-
-    return Container(
-      width: itemWidth,
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.beige,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 4))],
-      ),
+    return Card(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(15),
-            child: Image.asset(imagePath, width: itemWidth, height: itemWidth, fit: BoxFit.cover),
-          ),
-          SizedBox(height: 10),
-          Text(name, style: TextStyle(fontFamily: "Recoleta", fontSize: 18, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
-          SizedBox(height: 5),
-          Text(price, style: TextStyle(fontSize: 16, color: Colors.green, fontFamily: 'Recoleta')),
+          Text(cartItem
+              .product.name), // Access name from the product in cartItem
+          Text(
+              '\$${cartItem.product.price}'), // Access price from the product in cartItem
+          Text(
+              'Quantity: ${cartItem.quantity}'), // Access quantity from cartItem
         ],
       ),
     );
@@ -151,7 +173,8 @@ class _InputSectionState extends State<InputSection> {
   final TextEditingController addressController = TextEditingController();
   final TextEditingController nameController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
-  final TextEditingController additionalInfoController = TextEditingController();
+  final TextEditingController additionalInfoController =
+      TextEditingController();
   final TextEditingController zipController = TextEditingController();
   final TextEditingController cityController = TextEditingController();
   final TextEditingController regionController = TextEditingController();
@@ -161,11 +184,17 @@ class _InputSectionState extends State<InputSection> {
   String? hoveredId;
 
   void showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: Colors.red));
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message), backgroundColor: Colors.red));
   }
 
   void placeOrder() async {
-    if ([addressController.text, nameController.text, phoneController.text, zipController.text].any((t) => t.isEmpty)) {
+    if ([
+      addressController.text,
+      nameController.text,
+      phoneController.text,
+      zipController.text
+    ].any((t) => t.isEmpty)) {
       showError("All fields are required");
       return;
     }
@@ -190,7 +219,8 @@ class _InputSectionState extends State<InputSection> {
     };
 
     try {
-      final docRef = await FirebaseFirestore.instance.collection('orders').add(orderData);
+      final docRef =
+          await FirebaseFirestore.instance.collection('orders').add(orderData);
       setState(() {
         submittedData = orderData.map((k, v) => MapEntry(k, v.toString()));
         submittedDocId = docRef.id;
@@ -198,23 +228,41 @@ class _InputSectionState extends State<InputSection> {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
           actionsAlignment: MainAxisAlignment.center,
-          title: Text("Confirm Order", style: TextStyle(fontFamily: 'Recoleta', fontSize: 20, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
-          content: Text("Are you sure you want to place the order?", style: TextStyle(fontFamily: 'Recoleta', fontSize: 16)),
+          title: Text("Confirm Order",
+              style: TextStyle(
+                  fontFamily: 'Recoleta',
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center),
+          content: Text("Are you sure you want to place the order?",
+              style: TextStyle(fontFamily: 'Recoleta', fontSize: 16)),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
               style: TextButton.styleFrom(foregroundColor: Colors.red),
-              child: Text("Cancel", style: TextStyle(fontFamily: 'Recoleta', fontSize: 16)),
+              child: Text("Cancel",
+                  style: TextStyle(fontFamily: 'Recoleta', fontSize: 16)),
             ),
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Order placed successfully!", style: TextStyle(fontFamily: 'Recoleta')), backgroundColor: Colors.green));
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text("Order placed successfully!",
+                        style: TextStyle(fontFamily: 'Recoleta')),
+                    backgroundColor: Colors.green));
               },
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.pink, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-              child: Text("Confirm", style: TextStyle(fontFamily: 'Recoleta', fontSize: 16, color: Colors.white)),
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.pink,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10))),
+              child: Text("Confirm",
+                  style: TextStyle(
+                      fontFamily: 'Recoleta',
+                      fontSize: 16,
+                      color: Colors.white)),
             ),
           ],
         ),
@@ -241,11 +289,17 @@ class _InputSectionState extends State<InputSection> {
     };
 
     try {
-      await FirebaseFirestore.instance.collection('orders').doc(submittedDocId).update(updatedData);
+      await FirebaseFirestore.instance
+          .collection('orders')
+          .doc(submittedDocId)
+          .update(updatedData);
       setState(() {
         submittedData = updatedData.map((k, v) => MapEntry(k, v.toString()));
       });
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Order updated successfully!", style: TextStyle(fontFamily: 'Recoleta')), backgroundColor: Colors.blue));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Order updated successfully!",
+              style: TextStyle(fontFamily: 'Recoleta')),
+          backgroundColor: Colors.blue));
     } catch (e) {
       showError("Failed to update order: $e");
     }
@@ -254,12 +308,18 @@ class _InputSectionState extends State<InputSection> {
   void removeOrder() async {
     if (submittedDocId == null) return;
     try {
-      await FirebaseFirestore.instance.collection('orders').doc(submittedDocId).delete();
+      await FirebaseFirestore.instance
+          .collection('orders')
+          .doc(submittedDocId)
+          .delete();
       setState(() {
         submittedData = {};
         submittedDocId = null;
       });
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Order removed successfully!", style: TextStyle(fontFamily: 'Recoleta')), backgroundColor: Colors.red));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Order removed successfully!",
+              style: TextStyle(fontFamily: 'Recoleta')),
+          backgroundColor: Colors.red));
     } catch (e) {
       showError("Failed to remove order: $e");
     }
@@ -288,32 +348,57 @@ class _InputSectionState extends State<InputSection> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(10),
-            boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 12, offset: Offset(0, 6))],
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.black26, blurRadius: 12, offset: Offset(0, 6))
+            ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Center(child: Text("Shipping Details", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'Recoleta'))),
+              Center(
+                  child: Text("Shipping Details",
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Recoleta'))),
               SizedBox(height: 15),
-              CustomTextField("Enter address...", Icons.home, controller: addressController),
+              CustomTextField("Enter address...", Icons.home,
+                  controller: addressController),
               SizedBox(height: 15),
               Row(
                 children: [
-                  Expanded(child: CustomTextField("Recipient Name", Icons.person, controller: nameController)),
+                  Expanded(
+                      child: CustomTextField("Recipient Name", Icons.person,
+                          controller: nameController)),
                   SizedBox(width: 20),
-                  Expanded(child: CustomTextField("Phone Number", Icons.phone, controller: phoneController, isNumeric: true, maxLength: 12)),
+                  Expanded(
+                      child: CustomTextField("Phone Number", Icons.phone,
+                          controller: phoneController,
+                          isNumeric: true,
+                          maxLength: 12)),
                 ],
               ),
               SizedBox(height: 15),
-              CustomTextField("Additional Information", Icons.info, controller: additionalInfoController),
+              CustomTextField("Additional Information", Icons.info,
+                  controller: additionalInfoController),
               SizedBox(height: 15),
               Row(
                 children: [
-                  Expanded(child: CustomTextField("Zip Code", Icons.local_post_office, controller: zipController, isNumeric: true, maxLength: 4)),
+                  Expanded(
+                      child: CustomTextField(
+                          "Zip Code", Icons.local_post_office,
+                          controller: zipController,
+                          isNumeric: true,
+                          maxLength: 4)),
                   SizedBox(width: 15),
-                  Expanded(child: CustomTextField("City", Icons.location_city, controller: cityController)),
+                  Expanded(
+                      child: CustomTextField("City", Icons.location_city,
+                          controller: cityController)),
                   SizedBox(width: 15),
-                  Expanded(child: CustomTextField("Region", Icons.map, controller: regionController)),
+                  Expanded(
+                      child: CustomTextField("Region", Icons.map,
+                          controller: regionController)),
                 ],
               ),
               SizedBox(height: 25),
@@ -322,7 +407,11 @@ class _InputSectionState extends State<InputSection> {
                 children: [
                   CustomButton("Place Order", AppColors.pink, placeOrder),
                   SizedBox(width: 20),
-                  CustomButton("Back", AppColors.green, () => Navigator.push(context, MaterialPageRoute(builder: (context) => MyApp()))),
+                  CustomButton(
+                      "Back",
+                      AppColors.green,
+                      () => Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => MyApp()))),
                 ],
               ),
               if (submittedData.isNotEmpty) ...[
@@ -341,10 +430,12 @@ class _InputSectionState extends State<InputSection> {
                     displayField("Phone", submittedData['phone']),
                     displayField("City", submittedData['city']),
                     displayField("Zip", submittedData['zip']),
-                    displayField("Additional Info", submittedData['additionalInfo']),
+                    displayField(
+                        "Additional Info", submittedData['additionalInfo']),
                     Align(
                       alignment: Alignment.centerRight,
-                      child: Icon(Icons.edit, size: 18, color: Colors.grey.shade600),
+                      child: Icon(Icons.edit,
+                          size: 18, color: Colors.grey.shade600),
                     ),
                   ],
                 ),
@@ -363,11 +454,15 @@ class _InputSectionState extends State<InputSection> {
         ),
         SizedBox(height: 30),
         StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance.collection('orders').orderBy('timestamp', descending: true).snapshots(),
+          stream: FirebaseFirestore.instance
+              .collection('orders')
+              .orderBy('timestamp', descending: true)
+              .snapshots(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) return CircularProgressIndicator();
             final docs = snapshot.data!.docs;
-            return SubmittedOrdersSection(onSelect: handleOrderSelect, docs: docs);
+            return SubmittedOrdersSection(
+                onSelect: handleOrderSelect, docs: docs);
           },
         ),
       ],
@@ -395,8 +490,6 @@ Widget displayField(String label, dynamic value) {
   );
 }
 
-
-
 class CustomTextField extends StatelessWidget {
   final String labelText;
   final IconData icon;
@@ -405,7 +498,12 @@ class CustomTextField extends StatelessWidget {
   final int? maxLength;
   final bool restrictSpecial;
 
-  const CustomTextField(this.labelText, this.icon, {required this.controller, this.isNumeric = false, this.maxLength, this.restrictSpecial = false, super.key});
+  const CustomTextField(this.labelText, this.icon,
+      {required this.controller,
+      this.isNumeric = false,
+      this.maxLength,
+      this.restrictSpecial = false,
+      super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -414,7 +512,8 @@ class CustomTextField extends StatelessWidget {
       keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
       inputFormatters: [
         if (isNumeric) FilteringTextInputFormatter.digitsOnly,
-        if (restrictSpecial) FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z0-9 ]+$')),
+        if (restrictSpecial)
+          FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z0-9 ]+$')),
         if (maxLength != null) LengthLimitingTextInputFormatter(maxLength),
       ],
       decoration: InputDecoration(
@@ -452,7 +551,8 @@ class CustomButton extends StatelessWidget {
       style: ElevatedButton.styleFrom(
         backgroundColor: color,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16), // keep consistent size
+        padding: EdgeInsets.symmetric(
+            horizontal: 24, vertical: 16), // keep consistent size
       ),
       child: SizedBox(
         width: 110, // fixed width to prevent wrapping
@@ -472,12 +572,12 @@ class CustomButton extends StatelessWidget {
   }
 }
 
-
 class SubmittedOrdersSection extends StatefulWidget {
   final List<QueryDocumentSnapshot> docs;
   final Function(Map<String, dynamic>, String) onSelect;
 
-  const SubmittedOrdersSection({super.key, required this.docs, required this.onSelect});
+  const SubmittedOrdersSection(
+      {super.key, required this.docs, required this.onSelect});
 
   @override
   _SubmittedOrdersSectionState createState() => _SubmittedOrdersSectionState();
@@ -491,7 +591,8 @@ class _SubmittedOrdersSectionState extends State<SubmittedOrdersSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("Submitted Orders:", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        Text("Submitted Orders:",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
         SizedBox(height: 10),
         ...widget.docs.map((doc) {
           final data = doc.data() as Map<String, dynamic>;
@@ -506,10 +607,16 @@ class _SubmittedOrdersSectionState extends State<SubmittedOrdersSection> {
                 margin: EdgeInsets.symmetric(vertical: 8),
                 padding: EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: hoveredId == docId ? Colors.grey.shade100 : Colors.white,
+                  color:
+                      hoveredId == docId ? Colors.grey.shade100 : Colors.white,
                   border: Border.all(color: Colors.grey.shade300),
                   borderRadius: BorderRadius.circular(10),
-                  boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 5, offset: Offset(0, 3))],
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 5,
+                        offset: Offset(0, 3))
+                  ],
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -521,12 +628,16 @@ class _SubmittedOrdersSectionState extends State<SubmittedOrdersSection> {
                     displayField("City", data['city']),
                     displayField("Zip", data['zip']),
                     displayField("Additional Info", data['additionalInfo']),
-                    displayField("Timestamp", data['timestamp'] is Timestamp
-                        ? DateFormat('yyyy-MM-dd hh:mm a').format((data['timestamp'] as Timestamp).toDate())
-                        : data['timestamp']?.toString()),
+                    displayField(
+                        "Timestamp",
+                        data['timestamp'] is Timestamp
+                            ? DateFormat('yyyy-MM-dd hh:mm a').format(
+                                (data['timestamp'] as Timestamp).toDate())
+                            : data['timestamp']?.toString()),
                     Align(
                       alignment: Alignment.centerRight,
-                      child: Icon(Icons.edit, size: 18, color: Colors.grey.shade600),
+                      child: Icon(Icons.edit,
+                          size: 18, color: Colors.grey.shade600),
                     ),
                   ],
                 ),
@@ -556,7 +667,3 @@ class _SubmittedOrdersSectionState extends State<SubmittedOrdersSection> {
     );
   }
 }
-
-
-
-

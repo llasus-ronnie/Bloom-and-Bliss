@@ -132,8 +132,8 @@ class ProfileCard extends StatelessWidget {
             ),
             Column(
               children: [
-                Text('${user.fullName}'),
-                Text('${user.email}'),
+                Text(user.fullName),
+                Text(user.email),
                 Text('${user.phoneNumber}'),
               ],
             ),

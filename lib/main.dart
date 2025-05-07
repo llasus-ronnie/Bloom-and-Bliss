@@ -149,6 +149,8 @@ class MyHomePage extends StatelessWidget {
 }
 
 class ImageCarousel extends StatefulWidget {
+  const ImageCarousel({super.key});
+
   @override
   _ImageCarouselState createState() => _ImageCarouselState();
 }

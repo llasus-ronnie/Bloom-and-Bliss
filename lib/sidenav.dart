@@ -58,7 +58,7 @@ class _DrwHeaderState extends State<DrwHeader> {
             ),
           ),
           GestureDetector(
-            onTap: (widget.user.fullName?.isNotEmpty ?? false)
+            onTap: (widget.user.fullName.isNotEmpty ?? false)
                 ? () {
               Navigator.push(
                 context,
@@ -77,7 +77,7 @@ class _DrwHeaderState extends State<DrwHeader> {
                   ),
                   SizedBox(height: 10),
                   Text(
-                    '${(widget.user.fullName?.isNotEmpty ?? false) ? widget.user.fullName : "Guest User"}',
+                    (widget.user.fullName.isNotEmpty ?? false) ? widget.user.fullName : "Guest User",
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 14,
