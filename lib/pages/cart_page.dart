@@ -321,6 +321,9 @@ class _InputSectionState extends State<InputSection> {
       return;
     }
 
+
+
+
     final cart = Cart(user: widget.user);
     final cartController = CartController(cart, widget.user);
     final cartItems = await cartController.getCartItems().first;
@@ -328,6 +331,11 @@ class _InputSectionState extends State<InputSection> {
       0.0,
           (sum, item) => sum + (item.product.price * item.quantity),
     );
+
+    if (cartItems.isEmpty) {
+      showError("Your cart is empty. Please add items before placing an order");
+      return;
+    }
 
     final orderData = {
       'address': addressController.text,
