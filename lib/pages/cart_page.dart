@@ -113,7 +113,12 @@ class CartSection extends StatelessWidget {
 
         // Check if data is null or empty
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Center(child: Text('Your cart is empty.'));
+          return Center(child: Text('Your cart is empty 🥀',
+            style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Recoleta',
+          ),));
         }
 
         // Ensure the data is not null before using it
@@ -148,43 +153,89 @@ class CartItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        // Product Image
-        Image.network(cartItem.product.imageUrl, width: 50, height: 50),
-        SizedBox(width: 10),
-
-        // Product name and price
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(cartItem.product.name),
-            Text("\$${cartItem.product.price.toStringAsFixed(2)}"),
+
+            // Product name and price
+            Expanded(
+              flex: 2,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    cartItem.product.name,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Recoleta',
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    "₱${cartItem.product.price.toStringAsFixed(2)} each",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[700],
+                      fontFamily: 'PTSerif',
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Quantity controls
+            Expanded(
+              flex: 2,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.remove_circle_outline),
+                    onPressed: () => cartController.decreaseQuantity(cartItem),
+                  ),
+                  Text(
+                    cartItem.quantity.toString(),
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      fontFamily: 'PTSerif',
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.add_circle_outline),
+                    onPressed: () => cartController.increaseQuantity(cartItem),
+                  ),
+                ],
+              ),
+            ),
+
+            // Total price
+            Expanded(
+              flex: 2,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    "₱${(cartItem.product.price * cartItem.quantity).toStringAsFixed(2)}",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Recoleta',
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
-
-        // Quantity controls
-        Row(
-          children: [
-            IconButton(
-              icon: Icon(Icons.remove),
-              onPressed: () {
-                cartController.decreaseQuantity(cartItem);
-              },
-            ),
-            Text(cartItem.quantity.toString()),
-            IconButton(
-              icon: Icon(Icons.add),
-              onPressed: () {
-                cartController.increaseQuantity(cartItem);
-              },
-            ),
-          ],
-        ),
-
-        // Total price for this item
-        Text("\$${(cartItem.product.price * cartItem.quantity).toStringAsFixed(2)}"),
-      ],
+      ),
     );
   }
 }
