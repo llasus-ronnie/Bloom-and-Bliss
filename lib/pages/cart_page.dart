@@ -54,7 +54,7 @@ class CartPage extends StatelessWidget {
                   SizedBox(height: 40),
                   Center(child: CartSection(user: user)),
                   SizedBox(height: 40),
-                  InputSection(),
+                  InputSection(user: user),
                 ],
               ),
             ),
@@ -128,7 +128,9 @@ class CartSection extends StatelessWidget {
               alignment: WrapAlignment.center,
               children: cartItems.map((cartItem) {
                 return CartItemWidget(
-                    cartItem: cartItem); // Pass the whole cartItem
+                    cartItem: cartItem,
+                    cartController: cartController,
+                );
               }).toList(),
             );
           },
@@ -139,31 +141,62 @@ class CartSection extends StatelessWidget {
 }
 
 class CartItemWidget extends StatelessWidget {
-  final CartItem cartItem; // Expecting the whole `CartItem` object
+  final CartItem cartItem;
+  final CartController cartController;
 
-  const CartItemWidget({super.key, required this.cartItem});
- // Use cartItem here
+  CartItemWidget({required this.cartItem, required this.cartController});
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(cartItem
-              .product.name), // Access name from the product in cartItem
-          Text(
-              '\$${cartItem.product.price}'), // Access price from the product in cartItem
-          Text(
-              'Quantity: ${cartItem.quantity}'), // Access quantity from cartItem
-        ],
-      ),
+    return Row(
+      children: [
+        // Product Image
+        Image.network(cartItem.product.imageUrl, width: 50, height: 50),
+        SizedBox(width: 10),
+
+        // Product name and price
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(cartItem.product.name),
+            Text("\$${cartItem.product.price.toStringAsFixed(2)}"),
+          ],
+        ),
+
+        // Quantity controls
+        Row(
+          children: [
+            IconButton(
+              icon: Icon(Icons.remove),
+              onPressed: () {
+                cartController.decreaseQuantity(cartItem);
+              },
+            ),
+            Text(cartItem.quantity.toString()),
+            IconButton(
+              icon: Icon(Icons.add),
+              onPressed: () {
+                cartController.increaseQuantity(cartItem);
+              },
+            ),
+          ],
+        ),
+
+        // Total price for this item
+        Text("\$${(cartItem.product.price * cartItem.quantity).toStringAsFixed(2)}"),
+      ],
     );
   }
 }
 
+
 class InputSection extends StatefulWidget {
-  const InputSection({super.key});
+  final User user;  // Add this property
+
+  const InputSection({
+    super.key,
+    required this.user  // Make it required
+  });
 
   @override
   _InputSectionState createState() => _InputSectionState();
@@ -189,6 +222,7 @@ class _InputSectionState extends State<InputSection> {
   }
 
   void placeOrder() async {
+    // 1. First validate all input fields
     if ([
       addressController.text,
       nameController.text,
@@ -198,14 +232,25 @@ class _InputSectionState extends State<InputSection> {
       showError("All fields are required");
       return;
     }
+
     if (phoneController.text.length < 9) {
       showError("Phone number must be at least 9 digits");
       return;
     }
+
     if (zipController.text.length > 4) {
       showError("Zip code cannot exceed 4 characters");
       return;
     }
+
+    // 2. Prepare order data (but don't send yet)
+    final cart = Cart(user: widget.user);
+    final cartController = CartController(cart, widget.user);
+    final cartItems = await cartController.getCartItems().first;
+    final totalPrice = cartItems.fold(
+      0.0,
+          (sum, item) => sum + (item.product.price * item.quantity),
+    );
 
     final orderData = {
       'address': addressController.text,
@@ -215,60 +260,119 @@ class _InputSectionState extends State<InputSection> {
       'zip': zipController.text,
       'city': cityController.text,
       'region': regionController.text,
+      'items': cartItems.map((item) => {
+        'productId': item.product.id,
+        'name': item.product.name,
+        'price': item.product.price,
+        'quantity': item.quantity,
+      }).toList(),
+      'total': totalPrice,
       'timestamp': FieldValue.serverTimestamp(),
+      'userId': widget.user.id,
     };
 
-    try {
-      final docRef =
-          await FirebaseFirestore.instance.collection('orders').add(orderData);
-      setState(() {
-        submittedData = orderData.map((k, v) => MapEntry(k, v.toString()));
-        submittedDocId = docRef.id;
-      });
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-          actionsAlignment: MainAxisAlignment.center,
-          title: Text("Confirm Order",
-              style: TextStyle(
-                  fontFamily: 'Recoleta',
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center),
-          content: Text("Are you sure you want to place the order?",
-              style: TextStyle(fontFamily: 'Recoleta', fontSize: 16)),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              style: TextButton.styleFrom(foregroundColor: Colors.red),
-              child: Text("Cancel",
-                  style: TextStyle(fontFamily: 'Recoleta', fontSize: 16)),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text("Order placed successfully!",
-                        style: TextStyle(fontFamily: 'Recoleta')),
-                    backgroundColor: Colors.green));
-              },
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.pink,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10))),
-              child: Text("Confirm",
+    // 3. Show confirmation dialog
+    bool? shouldProceed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        actionsAlignment: MainAxisAlignment.center,
+        title: Text("Confirm Order",
+            style: TextStyle(
+                fontFamily: 'Recoleta',
+                fontSize: 20,
+                fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center),
+        content: Text("Are you sure you want to place the order?",
+            style: TextStyle(fontFamily: 'Recoleta', fontSize: 16)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: Text("Cancel",
+                style: TextStyle(fontFamily: 'Recoleta', fontSize: 16)),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.pink,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10))),
+            child: Text("Confirm",
+                style: TextStyle(
+                    fontFamily: 'Recoleta',
+                    fontSize: 16,
+                    color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldProceed == true) {
+      try {
+        // Show loading indicator
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext dialogContext) {
+            return Center(child: CircularProgressIndicator());
+          },
+        );
+
+        // Place order
+        final docRef = await FirebaseFirestore.instance
+            .collection('orders')
+            .add(orderData);
+
+        Navigator.of(context, rootNavigator: true).pop();
+
+        setState(() {
+          submittedData = orderData.map((k, v) => MapEntry(k, v.toString()));
+          submittedDocId = docRef.id;
+        });
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              title: Center(
+                child: Text(
+                  "Order Placed!",
                   style: TextStyle(
-                      fontFamily: 'Recoleta',
-                      fontSize: 16,
-                      color: Colors.white)),
-            ),
-          ],
-        ),
-      );
-    } catch (e) {
-      showError("Failed to place order: $e");
+                    fontFamily: 'Recoleta',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                  ),
+                ),
+              ),
+              content: Text(
+                "Thank you for choosing Bloom & Bliss!",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'PTSerif',
+                  fontSize: 16,
+                ),
+              ),
+              actions: [
+                Center(
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text(
+                      "OK",
+                      style: TextStyle(color: Colors.pink),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      } catch (e) {
+        Navigator.of(context, rootNavigator: true).pop(); // Ensure spinner closes
+        showError("Failed to place order: $e");
+      }
     }
   }
 
@@ -363,7 +467,7 @@ class _InputSectionState extends State<InputSection> {
                           fontWeight: FontWeight.bold,
                           fontFamily: 'Recoleta'))),
               SizedBox(height: 15),
-              CustomTextField("Enter address...", Icons.home,
+              CustomTextField("Home Address", Icons.home,
                   controller: addressController),
               SizedBox(height: 15),
               Row(
@@ -387,7 +491,7 @@ class _InputSectionState extends State<InputSection> {
                 children: [
                   Expanded(
                       child: CustomTextField(
-                          "Zip Code", Icons.local_post_office,
+                          "ZIP", Icons.local_post_office,
                           controller: zipController,
                           isNumeric: true,
                           maxLength: 4)),
@@ -405,13 +509,14 @@ class _InputSectionState extends State<InputSection> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CustomButton("Place Order", AppColors.pink, placeOrder),
-                  SizedBox(width: 20),
                   CustomButton(
                       "Back",
                       AppColors.green,
                       () => Navigator.push(context,
                           MaterialPageRoute(builder: (context) => MyApp()))),
+                  SizedBox(width: 20),
+                  CustomButton("Place Order", AppColors.pink, placeOrder),
+
                 ],
               ),
               if (submittedData.isNotEmpty) ...[
@@ -443,27 +548,15 @@ class _InputSectionState extends State<InputSection> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    CustomButton("Update Order", AppColors.pink, updateOrder),
-                    SizedBox(width: 20),
                     CustomButton("Remove Order", Colors.red, removeOrder),
+                    SizedBox(width: 20),
+                    CustomButton("Update Order", AppColors.pink, updateOrder),
+
                   ],
                 ),
               ],
             ],
           ),
-        ),
-        SizedBox(height: 30),
-        StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance
-              .collection('orders')
-              .orderBy('timestamp', descending: true)
-              .snapshots(),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) return CircularProgressIndicator();
-            final docs = snapshot.data!.docs;
-            return SubmittedOrdersSection(
-                onSelect: handleOrderSelect, docs: docs);
-          },
         ),
       ],
     );
@@ -519,7 +612,9 @@ class CustomTextField extends StatelessWidget {
       decoration: InputDecoration(
         prefixIcon: Icon(icon, color: AppColors.pink),
         labelText: labelText,
-        labelStyle: TextStyle(color: AppColors.pink, fontFamily: 'Recoleta'),
+        labelStyle: TextStyle(color: AppColors.pink, fontFamily: 'Recoleta', fontSize: 14),
+        isDense: true,  // Add this to reduce vertical padding
+        contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(50),
           borderSide: BorderSide(color: AppColors.pink, width: 2),
@@ -530,7 +625,6 @@ class CustomTextField extends StatelessWidget {
         ),
         filled: true,
         fillColor: AppColors.beige,
-        contentPadding: EdgeInsets.symmetric(vertical: 18, horizontal: 25),
       ),
       cursorColor: AppColors.black,
     );
@@ -572,98 +666,4 @@ class CustomButton extends StatelessWidget {
   }
 }
 
-class SubmittedOrdersSection extends StatefulWidget {
-  final List<QueryDocumentSnapshot> docs;
-  final Function(Map<String, dynamic>, String) onSelect;
 
-  const SubmittedOrdersSection(
-      {super.key, required this.docs, required this.onSelect});
-
-  @override
-  _SubmittedOrdersSectionState createState() => _SubmittedOrdersSectionState();
-}
-
-class _SubmittedOrdersSectionState extends State<SubmittedOrdersSection> {
-  String? hoveredId;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text("Submitted Orders:",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-        SizedBox(height: 10),
-        ...widget.docs.map((doc) {
-          final data = doc.data() as Map<String, dynamic>;
-          final docId = doc.id;
-          return MouseRegion(
-            onEnter: (_) => setState(() => hoveredId = docId),
-            onExit: (_) => setState(() => hoveredId = null),
-            child: GestureDetector(
-              onTap: () => widget.onSelect(data, docId),
-              child: AnimatedContainer(
-                duration: Duration(milliseconds: 200),
-                margin: EdgeInsets.symmetric(vertical: 8),
-                padding: EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color:
-                      hoveredId == docId ? Colors.grey.shade100 : Colors.white,
-                  border: Border.all(color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 5,
-                        offset: Offset(0, 3))
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    displayField("Name", data['name']),
-                    displayField("Region", data['region']),
-                    displayField("Address", data['address']),
-                    displayField("Phone", data['phone']),
-                    displayField("City", data['city']),
-                    displayField("Zip", data['zip']),
-                    displayField("Additional Info", data['additionalInfo']),
-                    displayField(
-                        "Timestamp",
-                        data['timestamp'] is Timestamp
-                            ? DateFormat('yyyy-MM-dd hh:mm a').format(
-                                (data['timestamp'] as Timestamp).toDate())
-                            : data['timestamp']?.toString()),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Icon(Icons.edit,
-                          size: 18, color: Colors.grey.shade600),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        }),
-      ],
-    );
-  }
-
-  Widget displayField(String label, dynamic value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: RichText(
-        text: TextSpan(
-          style: TextStyle(fontSize: 15, fontFamily: '', color: Colors.black),
-          children: [
-            TextSpan(
-              text: "$label: ",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            TextSpan(text: value?.toString() ?? 'N/A'),
-          ],
-        ),
-      ),
-    );
-  }
-}

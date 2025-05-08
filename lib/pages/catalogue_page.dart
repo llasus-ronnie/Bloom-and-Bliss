@@ -87,22 +87,22 @@ class TextTitleSection extends StatelessWidget {
 }
 
 class FlowerGrid extends StatelessWidget {
-    final User user;
+  final User user;
 
   FlowerGrid({super.key, required this.user});
-  
+
 
   final List<Map<String, dynamic>> flowers = [
     {
       "image":
-          "https://www.redflowersngifts.com/cdn/shop/products/roses-bouquet-3-675845.jpg?v=1638706779",
+      "https://www.redflowersngifts.com/cdn/shop/products/roses-bouquet-3-675845.jpg?v=1638706779",
       "title": "Rose Bouquet",
       "rating": 4.5,
       "price": 550.00
     },
     {
       "image":
-          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSSw7eCN14BX6Te1LHvLKdSLTsLSdJoWgDMdQ&s",
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSSw7eCN14BX6Te1LHvLKdSLTsLSdJoWgDMdQ&s",
       "title": "Tulip Mix",
       "rating": 4.2,
       "price": 480.00
@@ -116,7 +116,7 @@ class FlowerGrid extends StatelessWidget {
     },
     {
       "image":
-          "https://www.fnp.com/images/pr/philippines/l/v20220111163039/white-oriental-lilies-bouquet_1.jpg",
+      "https://www.fnp.com/images/pr/philippines/l/v20220111163039/white-oriental-lilies-bouquet_1.jpg",
       "title": "Lily Collection",
       "rating": 4.3,
       "price": 390.00
@@ -125,17 +125,21 @@ class FlowerGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-        final List<Product> products = List.generate(
+    final List<Product> products = List.generate(
       flowers.length,
-      (index) {
+          (index) {
         return Product(
-          id: 'product$index', // Simple unique ID like 'product0', 'product1', etc.
-          name: flowers[index]["title"], // Product name (title)
-          price: flowers[index]["price"], // Price as a double
+          id: 'product$index',
+          // Simple unique ID like 'product0', 'product1', etc.
+          name: flowers[index]["title"],
+          // Product name (title)
+          price: flowers[index]["price"],
+          // Price as a double
+          imageUrl: flowers[index]["image"], // Pass the imageUrl here
         );
       },
     );
-    final cart = Cart( user: user); 
+    final cart = Cart(user: user);
     final cartController = CartController(cart, user);
 
     return Padding(

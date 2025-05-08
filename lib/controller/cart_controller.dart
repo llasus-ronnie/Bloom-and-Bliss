@@ -13,52 +13,70 @@ class CartController {
 
   CartController(this.cart, this.user);
 
-Stream<List<CartItem>> getCartItems() {
-  final cartCollection = firestore
-      .collection('carts')
-      .doc(user.id)
-      .collection('cart');
+  Stream<List<CartItem>> getCartItems() {
+    return firestore.collection('carts').snapshots().map((snapshot) {
+      // Filter only the documents that belong to the current user
+      final docs = snapshot.docs.where((doc) => doc.data()['userId'] == user.id);
 
-  return cartCollection.snapshots().map((snapshot) {
-    return snapshot.docs.map((doc) {
-      final data = doc.data();
+      return docs.map((doc) {
+        final data = doc.data();
 
-      final product = Product(
-        id: data['productId'] ?? '',
-        name: data['name'] ?? '',
-        price: (data['price'] ?? 0).toDouble(),
-      );
+        // Ensure 'imageUrl' is also retrieved from Firestore
+        final product = Product(
+          id: data['productId'] ?? '',
+          name: data['name'] ?? '',
+          price: (data['price'] ?? 0).toDouble(),
+          imageUrl: data['imageUrl'] ?? '', // Add the 'imageUrl' field here
+        );
 
-      return CartItem(
-        product: product,
-        quantity: data['quantity'] ?? 0,
-      );
-    }).toList();
-  });
-}
-
-
-
-void addProduct(Product product) async {
-  final existingProductIndex =
-      cart.items.indexWhere((item) => item.product.id == product.id);
-
-  final cartRef = firestore
-      .collection('carts')
-      .doc(cart.user.id)
-      .collection('cart')
-      .doc(product.id); 
-
-  if (existingProductIndex >= 0) {
-    cart.items[existingProductIndex].quantity++;
-
-    await cartRef.update({
-      'quantity': cart.items[existingProductIndex].quantity,
+        return CartItem(
+          product: product,
+          quantity: data['quantity'] ?? 0,
+        );
+      }).toList();
     });
+  }
 
-    print("Firestore write completed");
+
+  // Add a product to the cart
+  void addProduct(Product product) async {
+    final existingProductIndex = cart.items.indexWhere((item) => item.product.id == product.id);
+
+    if (existingProductIndex >= 0) {
+      cart.items[existingProductIndex].quantity++;
+      await _updateFirestoreQuantity(cart.items[existingProductIndex]);
+    } else {
+      final newCartItem = CartItem(product: product, quantity: 1);
+      cart.items.add(newCartItem);
+      await _addNewProductToFirestore(newCartItem);
+    }
+  }
+
+  // Increase the quantity of an existing product in the cart
+  void increaseQuantity(CartItem cartItem) async {
+    cartItem.quantity++;
+    await _updateFirestoreQuantity(cartItem);
+  }
+
+  // Decrease the quantity of an existing product in the cart
+  void decreaseQuantity(CartItem cartItem) async {
+    if (cartItem.quantity > 1) {
+      cartItem.quantity--;
+      await _updateFirestoreQuantity(cartItem);
+    } else {
+      // Remove the item from the cart if the quantity is 1
+      await _deleteCartItemFromFirestore(cartItem);
+    }
+  }
+
+  // Update the quantity of a product in Firestore
+  Future<void> _updateFirestoreQuantity(CartItem cartItem) async {
+    final cartDocId = '${user.id}_${cartItem.product.id}';
+    await firestore.collection('carts').doc(cartDocId).update({
+      'quantity': cartItem.quantity,
+    });
     Fluttertoast.showToast(
-      msg: "Product quantity updated in cart",
+      msg: "Quantity updated",
       toastLength: Toast.LENGTH_SHORT,
       gravity: ToastGravity.BOTTOM,
       timeInSecForIosWeb: 1,
@@ -66,17 +84,17 @@ void addProduct(Product product) async {
       textColor: Colors.white,
       fontSize: 16.0,
     );
-  } else {
-    final newCartItem = CartItem(product: product, quantity: 1);
-    cart.items.add(newCartItem);
+  }
 
-    await cartRef.set({
-      'productId': product.id,
-      'name': product.name,
-      'price': product.price,
-      'quantity': 1,
+  // Add a new product to Firestore
+  Future<void> _addNewProductToFirestore(CartItem cartItem) async {
+    await firestore.collection('carts').doc('${user.id}_${cartItem.product.id}').set({
+      'userId': user.id,
+      'productId': cartItem.product.id,
+      'name': cartItem.product.name,
+      'price': cartItem.product.price,
+      'quantity': cartItem.quantity,
     });
-
     Fluttertoast.showToast(
       msg: "Product added to cart",
       toastLength: Toast.LENGTH_SHORT,
@@ -87,6 +105,24 @@ void addProduct(Product product) async {
       fontSize: 16.0,
     );
   }
-}
 
+  // Remove the product from Firestore
+  Future<void> _deleteCartItemFromFirestore(CartItem cartItem) async {
+    final cartDocId = '${user.id}_${cartItem.product.id}';
+    await firestore.collection('carts').doc(cartDocId).delete();
+    Fluttertoast.showToast(
+      msg: "Product removed from cart",
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      timeInSecForIosWeb: 1,
+      backgroundColor: Colors.red,
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
+  }
+
+  // Get the total cost of all products in the cart
+  double getTotalCost() {
+    return cart.items.fold(0.0, (sum, item) => sum + (item.product.price * item.quantity));
+  }
 }
