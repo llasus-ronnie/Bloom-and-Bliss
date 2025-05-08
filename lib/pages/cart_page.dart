@@ -85,41 +85,50 @@ class TextTitleSection extends StatelessWidget {
   }
 }
 
-class CartSection extends StatelessWidget {
+class CartSection extends StatefulWidget {
   final User user;
+
   const CartSection({super.key, required this.user});
 
   @override
+  _CartSectionState createState() => _CartSectionState();
+}
+
+class _CartSectionState extends State<CartSection> {
+  late CartController cartController;
+  late Cart cart;
+  late Stream<List<CartItem>> cartItemsStream;
+
+  @override
+  void initState() {
+    super.initState();
+
+    cart = Cart(user: widget.user);
+    cartController = CartController(cart, widget.user);
+
+    cartItemsStream = cartController.getCartItems();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // Create the Cart object using the User
-    final cart = Cart(user: user);
-
-    // Now pass the Cart object to the CartController
-    final cartController = CartController(cart, user);
-
     return StreamBuilder<List<CartItem>>(
-      stream: cartController.getCartItems(), // Stream from Firestore
+      stream: cartItemsStream, 
       builder: (context, snapshot) {
-        // Check the connection state first
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
         }
 
-        // Check for errors in the snapshot
         if (snapshot.hasError) {
           print('Error: ${snapshot.error}');
           return Center(child: Text('Error: ${snapshot.error}'));
         }
 
-        // Check if data is null or empty
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return Center(child: Text('Your cart is empty.'));
         }
 
-        // Ensure the data is not null before using it
         var cartItems = snapshot.data!;
 
-        // Display the cart items
         return LayoutBuilder(
           builder: (context, constraints) {
             return Wrap(
@@ -128,7 +137,8 @@ class CartSection extends StatelessWidget {
               alignment: WrapAlignment.center,
               children: cartItems.map((cartItem) {
                 return CartItemWidget(
-                    cartItem: cartItem); // Pass the whole cartItem
+                  cartItem: cartItem, 
+                );
               }).toList(),
             );
           },
@@ -137,7 +147,6 @@ class CartSection extends StatelessWidget {
     );
   }
 }
-
 class CartItemWidget extends StatelessWidget {
   final CartItem cartItem; // Expecting the whole `CartItem` object
 
@@ -151,11 +160,11 @@ class CartItemWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(cartItem
-              .product.name), // Access name from the product in cartItem
+              .product.name), 
           Text(
-              '\$${cartItem.product.price}'), // Access price from the product in cartItem
+              '\$${cartItem.product.price}'), 
           Text(
-              'Quantity: ${cartItem.quantity}'), // Access quantity from cartItem
+              'Quantity: ${cartItem.quantity}'), 
         ],
       ),
     );
