@@ -95,7 +95,7 @@ class CartSection extends StatelessWidget {
     final cartController = CartController(cart, user);
 
     return StreamBuilder<List<CartItem>>(
-      stream: cartController.getCartItems(), // Stream from Firestore
+      stream: cartController.getCartItems(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
@@ -173,8 +173,6 @@ class CartItemWidget extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-
-            // Product name and price
             Expanded(
               flex: 2,
               child: Column(
@@ -200,8 +198,6 @@ class CartItemWidget extends StatelessWidget {
                 ],
               ),
             ),
-
-            // Quantity
             Expanded(
               flex: 2,
               child: Row(
@@ -226,8 +222,6 @@ class CartItemWidget extends StatelessWidget {
                 ],
               ),
             ),
-
-            // Total price
             Expanded(
               flex: 2,
               child: Column(
@@ -268,8 +262,7 @@ class _InputSectionState extends State<InputSection> {
   final TextEditingController addressController = TextEditingController();
   final TextEditingController nameController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
-  final TextEditingController additionalInfoController =
-  TextEditingController();
+  final TextEditingController additionalInfoController = TextEditingController();
   final TextEditingController zipController = TextEditingController();
   final TextEditingController cityController = TextEditingController();
   final TextEditingController regionController = TextEditingController();
@@ -277,6 +270,30 @@ class _InputSectionState extends State<InputSection> {
   Map<String, String> submittedData = {};
   String? submittedDocId;
   String? hoveredId;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+    nameController.text = widget.user.fullName;
+  }
+
+  Future<void> _fetchUserData() async {
+    try {
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.user.id)
+          .get();
+
+      if (userDoc.exists) {
+        final userData = userDoc.data();
+        nameController.text = userData?['fullName'] ?? '';
+        phoneController.text = userData?['phoneNumber']?.toString() ?? '';
+      }
+    } catch (e) {
+      print('Error fetching user data: $e');
+    }
+  }
 
   void showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -531,14 +548,21 @@ class _InputSectionState extends State<InputSection> {
               Row(
                 children: [
                   Expanded(
-                      child: CustomTextField("Recipient Name", Icons.person,
-                          controller: nameController)),
+                    child: IgnorePointer(
+                      child: CustomTextField(
+                        "Recipient Name",
+                        Icons.person,
+                        controller: nameController,
+                      ),
+                    ),
+                  ),
                   SizedBox(width: 20),
                   Expanded(
                       child: CustomTextField("Phone Number", Icons.phone,
                           controller: phoneController,
                           isNumeric: true,
-                          maxLength: 12)),
+                          maxLength: 12)
+                  ),
                 ],
               ),
               SizedBox(height: 15),
@@ -671,7 +695,7 @@ class CustomTextField extends StatelessWidget {
         prefixIcon: Icon(icon, color: AppColors.pink),
         labelText: labelText,
         labelStyle: TextStyle(color: AppColors.pink, fontFamily: 'Recoleta', fontSize: 14),
-        isDense: true,  // Add this to reduce vertical padding
+        isDense: true,
         contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(50),

@@ -23,6 +23,7 @@ class SignUpPage extends StatelessWidget {
             Container(
               decoration: const BoxDecoration(
                 image: DecorationImage(
+                  // image: AssetImage("assets/homepage/image1.jpg"),
                   image: AssetImage("assets/flowers-bg.jpg"),
                   fit: BoxFit.cover,
                 ),
