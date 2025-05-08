@@ -40,7 +40,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         fullName: fullNameController.text,
         email: emailController.text,
         phoneNumber: int.parse(phoneController.text),
-        password: widget.user.password, // Keep the existing password
+        password: widget.user.password,
       );
 
       Navigator.pushReplacement(
@@ -53,25 +53,66 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.beige,
       appBar: AppBar(
-        title: const Text("Edit Profile"),
+        title: const Text(
+          "Edit Profile",
+          style: TextStyle(
+            fontFamily: 'Recoleta',
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         backgroundColor: AppColors.pink,
+        foregroundColor: Colors.white,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Form(
           key: _formKey,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildTextField("Full Name", fullNameController),
-              buildTextField("Email", emailController),
-              buildTextField("Phone Number", phoneController),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: saveProfile,
-                style: ElevatedButton.styleFrom(backgroundColor: AppColors.pink),
-                child: const Text("Save Changes", style: TextStyle(color: Colors.white)),
+              const Center(
+                child: CircleAvatar(
+                  backgroundImage: AssetImage("assets/sidenav/guest-icon.png"),
+                  radius: 50,
+                ),
+              ),
+              const SizedBox(height: 30),
+              buildTextField(
+                labelText: "Full Name",
+                icon: Icons.person,
+                controller: fullNameController,
+              ),
+              buildTextField(
+                labelText: "Email",
+                icon: Icons.email,
+                controller: emailController,
+              ),
+              buildTextField(
+                labelText: "Phone Number",
+                icon: Icons.phone,
+                controller: phoneController,
+              ),
+              const SizedBox(height: 30),
+              Center(
+                child: ElevatedButton.icon(
+                  onPressed: saveProfile,
+                  label: const Text("Save Changes"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.pink,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 14),
+                    textStyle: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Recoleta',
+                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    elevation: 3,
+                  ),
+                ),
               ),
             ],
           ),
@@ -80,13 +121,21 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 
-  Widget buildTextField(String labelText, TextEditingController controller) {
+  Widget buildTextField({
+    required String labelText,
+    required IconData icon,
+    required TextEditingController controller,
+  }) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 15),
+      padding: const EdgeInsets.only(bottom: 20),
       child: TextFormField(
         controller: controller,
         decoration: InputDecoration(
+          prefixIcon: Icon(icon, color: AppColors.pink),
           labelText: labelText,
+          labelStyle: const TextStyle(fontWeight: FontWeight.bold),
+          filled: true,
+          fillColor: Colors.white,
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
         ),
         validator: (value) => value!.isEmpty ? "$labelText is required" : null,

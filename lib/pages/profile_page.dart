@@ -73,6 +73,7 @@ class ProfileCard extends StatelessWidget {
             ),
             TextButton(
               onPressed: () {
+                Navigator.pop(context);
                 _deleteAccount(context);
               },
               child: const Text("Delete", style: TextStyle(color: Colors.red)),
@@ -108,11 +109,18 @@ class ProfileCard extends StatelessWidget {
         throw Exception('No user is currently signed in.');
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to delete account: $e')),
-      );
+      if (e is firebase_auth.FirebaseAuthException && e.code == 'requires-recent-login') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please log in again to delete your account.')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to delete account: $e')),
+        );
+      }
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -130,12 +138,28 @@ class ProfileCard extends StatelessWidget {
               backgroundImage: AssetImage('assets/sidenav/guest-icon.png'),
               radius: 50,
             ),
-            Column(
-              children: [
-                Text(user.fullName),
-                Text(user.email),
-                Text('${user.phoneNumber}'),
-              ],
+            const SizedBox(height: 15),
+            Text(
+              user.fullName,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Recoleta',
+              ),
+            ),
+            Text(
+              user.email,
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey[700],
+              ),
+            ),
+            Text(
+              '${user.phoneNumber}',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey[700],
+              ),
             ),
             const SizedBox(height: 20),
             Row(
