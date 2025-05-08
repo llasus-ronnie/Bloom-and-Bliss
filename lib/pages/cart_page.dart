@@ -109,10 +109,10 @@ class CartSection extends StatelessWidget {
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return Center(child: Text('Your cart is empty 🥀',
             style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'Recoleta',
-          ),));
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Recoleta',
+            ),));
         }
 
         var cartItems = snapshot.data!;
@@ -269,7 +269,7 @@ class _InputSectionState extends State<InputSection> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController additionalInfoController =
-      TextEditingController();
+  TextEditingController();
   final TextEditingController zipController = TextEditingController();
   final TextEditingController cityController = TextEditingController();
   final TextEditingController regionController = TextEditingController();
@@ -570,7 +570,7 @@ class _InputSectionState extends State<InputSection> {
                   CustomButton(
                       "Back",
                       AppColors.green,
-                      () => Navigator.push(context,
+                          () => Navigator.push(context,
                           MaterialPageRoute(builder: (context) => MyApp()))),
                   SizedBox(width: 20),
                   CustomButton("Place Order", AppColors.pink, placeOrder),
@@ -651,10 +651,10 @@ class CustomTextField extends StatelessWidget {
 
   const CustomTextField(this.labelText, this.icon,
       {required this.controller,
-      this.isNumeric = false,
-      this.maxLength,
-      this.restrictSpecial = false,
-      super.key});
+        this.isNumeric = false,
+        this.maxLength,
+        this.restrictSpecial = false,
+        super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -723,5 +723,4 @@ class CustomButton extends StatelessWidget {
     );
   }
 }
-
 

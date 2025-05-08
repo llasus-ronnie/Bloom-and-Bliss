@@ -108,7 +108,7 @@ class FlowerGrid extends StatelessWidget {
     },
     {
       "image":
-          "https://www.flowerchimp.com.ph/cdn/shop/files/BQ4_1.jpg?v=1694675355",
+      "https://www.flowerchimp.com.ph/cdn/shop/files/BQ4_1.jpg?v=1694675355",
       "title": "Sunflower Set",
       "rating": 4.8,
       "price": 450.00
@@ -453,9 +453,9 @@ class HeroLayoutCard extends StatelessWidget {
                           .textTheme
                           .headlineSmall
                           ?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'Recoleta'),
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Recoleta'),
                     ),
                     const SizedBox(height: 5),
                     Text(

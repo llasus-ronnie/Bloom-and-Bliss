@@ -28,11 +28,16 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> fetchSubmittedOrders() async {
-    final snapshot = await FirebaseFirestore.instance.collection('orders').get();
+    final snapshot = await FirebaseFirestore.instance
+        .collection('orders')
+        .where('userId', isEqualTo: widget.user.id)
+        .get();
+
     setState(() {
       _submittedOrders = snapshot.docs;
     });
   }
+
 
   void handleSelect(Map<String, dynamic> data, String docId) {
     print("Selected order: $docId");
