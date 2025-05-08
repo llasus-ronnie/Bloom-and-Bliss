@@ -35,7 +35,7 @@ class CataloguePage extends StatelessWidget {
             flexibleSpace: Center(
               child: Padding(
                 padding: EdgeInsets.only(top: 10, bottom: 5),
-                child: Image.asset("assets/bnb-logo.png", height: 70),
+                child: Image.asset("assets/sidenav/bnb-logo.png", height: 70),
               ),
             ),
             iconTheme: IconThemeData(color: AppColors.pink),
@@ -51,7 +51,7 @@ class CataloguePage extends StatelessWidget {
               SizedBox(height: 20),
               CarouselView(),
               SizedBox(height: 20),
-              ButtonRowFilter(),
+              // ButtonRowFilter(),
               SizedBox(height: 20),
               FlowerGrid(user: user,),
               ButtonFieldSection(
@@ -109,7 +109,7 @@ class FlowerGrid extends StatelessWidget {
     },
     {
       "image":
-          "https://assets.florista.ph/uploads/product-pics/5005_88_5005.webp",
+          "https://www.flowerchimp.com.ph/cdn/shop/files/BQ4_1.jpg?v=1694675355",
       "title": "Sunflower Set",
       "rating": 4.8,
       "price": 450.00
@@ -162,83 +162,90 @@ class FlowerGrid extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Flower Image
                 ClipRRect(
                   borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
-                  child: SizedBox(
+                  child: Image.network(
+                    flowers[index]["image"],
                     width: double.infinity,
-                    height: 80,
-                    child: Image.network(
-                      flowers[index]["image"],
-                      fit: BoxFit.cover,
-                    ),
+                    height: 200,
+                    fit: BoxFit.cover,
                   ),
                 ),
 
-                /// Content Section (Fixed Layout)
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      /// Title (Fixed Position)
-                      Text(
-                        product.name,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
+                // Spacing between image and content
+                SizedBox(height: 10),
+
+                // Content (title, rating, price, button)
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Product Title
+                        Text(
+                          product.name,
+                          style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
-                            fontFamily: 'Recoleta'),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                            fontFamily: 'Recoleta',
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        SizedBox(height: 5),
 
-                      SizedBox(height: 5),
-
-                      /// Rating Row (Fixed Position)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Icon(Icons.star, color: Colors.amber, size: 16),
-                          SizedBox(width: 5),
-                          Text("${flowers[index]["rating"]}",
+                        // Rating Row
+                        Row(
+                          children: [
+                            Icon(Icons.star, color: Colors.amber, size: 16),
+                            SizedBox(width: 5),
+                            Text(
+                              "${flowers[index]["rating"]}",
                               style: TextStyle(
-                                  fontSize: 14, fontFamily: 'PTSerif')),
-                        ],
-                      ),
+                                fontSize: 14,
+                                fontFamily: 'PTSerif',
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 5),
 
-                      SizedBox(height: 5),
-
-                      /// Price (Fixed Position)
-                      Text(
-                        product.price.toString(),
-                        style: TextStyle(
+                        // Price
+                        Text(
+                          '\₱${product.price.toStringAsFixed(2)}',
+                          style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
                             color: AppColors.green,
-                            fontFamily: 'Recoleta'),
-                      ),
-
-                      SizedBox(height: 10),
-
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () {
-                              cartController.addProduct(product);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.pink,
-                            foregroundColor: Colors.white,
-                            padding: EdgeInsets.symmetric(
-                                vertical: 8), // Fixed closing parenthesis
+                            fontFamily: 'Recoleta',
                           ),
-                          child: Text("Add to Cart",
-                              style: TextStyle(
-                                  fontSize: 12, fontFamily: 'Recoleta')),
                         ),
-                      ),
-                    ],
+
+                        Spacer(), // Pushes the button to the bottom
+
+                        // Add to Cart Button
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              cartController.addProduct(product);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.pink,
+                              foregroundColor: Colors.white,
+                              padding: EdgeInsets.symmetric(vertical: 8),
+                            ),
+                            child: Text(
+                              "Add to Cart",
+                              style: TextStyle(fontSize: 12, fontFamily: 'Recoleta'),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 5), // Space under the button
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -250,53 +257,53 @@ class FlowerGrid extends StatelessWidget {
   }
 }
 
-class ButtonRowFilter extends StatelessWidget {
-  const ButtonRowFilter({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 50, // Increase height as needed
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _buildButton("Your Favorites"),
-            SizedBox(width: 10),
-            _buildButton("New Arrivals"),
-            SizedBox(width: 10),
-            _buildButton("Best Sellers"),
-            SizedBox(width: 10),
-            _buildButton("Trending"),
-            SizedBox(width: 10),
-            _buildButton("Limited Edition"),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildButton(String text) {
-    return SizedBox(
-      height: 40,
-      child: MouseRegion(
-        cursor: SystemMouseCursors.click,
-        child: ElevatedButton(
-          onPressed: () {},
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.yellow,
-            foregroundColor: AppColors.black,
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            textStyle: TextStyle(fontSize: 16, fontFamily: 'Recoleta'),
-            elevation: 2,
-          ),
-          child: Text(text),
-        ),
-      ),
-    );
-  }
-}
+// class ButtonRowFilter extends StatelessWidget {
+//   const ButtonRowFilter({super.key});
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return SizedBox(
+//       height: 50, // Increase height as needed
+//       child: SingleChildScrollView(
+//         scrollDirection: Axis.horizontal,
+//         child: Row(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: [
+//             _buildButton("Your Favorites"),
+//             SizedBox(width: 10),
+//             _buildButton("New Arrivals"),
+//             SizedBox(width: 10),
+//             _buildButton("Best Sellers"),
+//             SizedBox(width: 10),
+//             _buildButton("Trending"),
+//             SizedBox(width: 10),
+//             _buildButton("Limited Edition"),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+//
+//   Widget _buildButton(String text) {
+//     return SizedBox(
+//       height: 40,
+//       child: MouseRegion(
+//         cursor: SystemMouseCursors.click,
+//         child: ElevatedButton(
+//           onPressed: () {},
+//           style: ElevatedButton.styleFrom(
+//             backgroundColor: AppColors.yellow,
+//             foregroundColor: AppColors.black,
+//             padding: EdgeInsets.symmetric(horizontal: 20),
+//             textStyle: TextStyle(fontSize: 16, fontFamily: 'Recoleta'),
+//             elevation: 2,
+//           ),
+//           child: Text(text),
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 class ButtonFieldSection extends StatelessWidget {
   final User user;
