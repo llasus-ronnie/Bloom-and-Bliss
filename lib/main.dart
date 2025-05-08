@@ -1,4 +1,5 @@
 import 'package:bloom_and_bliss/models/user.dart';
+import 'package:bloom_and_bliss/pages/signin_page.dart';
 import 'package:flutter/material.dart';
 import 'package:bloom_and_bliss/sidenav.dart';
 import 'constants/colors.dart';
@@ -41,7 +42,6 @@ class MyApp extends StatelessWidget {
             }
 
             if (snapshot.hasData) {
-              // Logged-in user: fetch Firestore data
               return FutureBuilder<DocumentSnapshot>(
                 future: FirebaseFirestore.instance
                     .collection('users')
@@ -66,18 +66,19 @@ class MyApp extends StatelessWidget {
                     email: userData['email'] ?? '',
                     password: '',
                     phoneNumber: userData['phoneNumber'] ?? 0,
+                    isGuest: false,
                   );
 
                   return MyHomePage(user: user);
                 },
               );
             } else {
-              // Guest user (not logged in)
               User guestUser = User(
                 fullName: '',
                 email: '',
                 password: '',
                 phoneNumber: 0,
+                isGuest: true,
               );
               return MyHomePage(user: guestUser);
             }
@@ -314,6 +315,33 @@ class BodySection extends StatelessWidget {
 }
 
 class ButtonRow extends StatelessWidget {
+  void _showLoginPrompt(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Login Required"),
+          content: Text("Please log in to access this feature."),
+          actions: <Widget>[
+            TextButton(
+              child: Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text("Log In"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const SignInPage()));
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   final User user;
   const ButtonRow({super.key, required this.user});
 
@@ -324,11 +352,11 @@ class ButtonRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Expanded(child: _buildButton(context, Icons.storefront, "Shop Now",  CataloguePage(user: user,))),
-          const SizedBox(width: 20),
-          Expanded(child: _buildButton(context, Icons.local_florist, "Our Flowers",  DetailsPage(user: user,))),
-          const SizedBox(width: 20),
-          Expanded(child: _buildButton(context, Icons.shopping_cart, "Your Cart",  CartPage(user: user,))),
+          Expanded(child: _buildButton(context, Icons.storefront, "Shop Now", CataloguePage(user: user))),
+            const SizedBox(width: 20),
+          Expanded(child: _buildButton(context, Icons.local_florist, "Our Flowers", DetailsPage(user: user))),
+            const SizedBox(width: 20),
+          Expanded(child: _buildButton(context, Icons.shopping_cart, "Your Cart", CartPage(user: user))),
         ],
       ),
     );
@@ -337,7 +365,11 @@ class ButtonRow extends StatelessWidget {
   Widget _buildButton(BuildContext context, IconData icon, String label, Widget page) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => page));
+        if (user.isGuest) {
+          _showLoginPrompt(context);
+        } else {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => page));
+        }
       },
       child: Container(
         height: 150,

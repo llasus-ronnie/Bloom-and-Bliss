@@ -363,60 +363,76 @@ class SubmittedOrdersSection extends StatelessWidget {
       itemCount: docs.length,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemBuilder: (context, index) {
-        final doc = docs[index];
-        final order = doc.data() as Map<String, dynamic>;
-        final docId = doc.id;
-        final List<dynamic> items = order['items'] ?? [];
+        itemBuilder: (context, index) {
+          final doc = docs[index];
+          final order = doc.data() as Map<String, dynamic>;
+          final docId = doc.id;
+          final List<dynamic> items = order['items'] ?? [];
 
-        return Card(
-          color: AppColors.beige,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          elevation: 5,
-          margin: const EdgeInsets.symmetric(vertical: 10),
-          child: Padding(
-            padding: const EdgeInsets.all(15),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(order['name'], style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                Text(order['region']),
-                Text(order['address']),
-                Text(order['phone']),
-                Text(order['city']),
-                const SizedBox(height: 10),
-
-                // Display the items
-                if (items.isNotEmpty) ...[
-                  const Text("Items:", style: TextStyle(fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 5),
-                  ...items.map((item) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 2),
-                      child: Text("- ${item['name']} x${item['quantity']} @ ₱${item['price']}"),
-                    );
-                  }).toList(),
-                  const SizedBox(height: 10),
-                ],
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    CustomButton("Remove", AppColors.red, () {
-                      onRemove(docId);
-                    }),
-                    CustomButton("Update", AppColors.pink, () {
-                      onUpdate(docId);
-                    }),
-                  ],
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: Text(
+                  "Orders",
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Recoleta',
+                    color: AppColors.beige,
+                  ),
                 ),
-              ],
-            ),
-          ),
-        );
-      },
+              ),
+              Card(
+                color: AppColors.beige,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                elevation: 5,
+                margin: const EdgeInsets.symmetric(vertical: 10),
+                child: Padding(
+                  padding: const EdgeInsets.all(15),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Name: ${order['name']}", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      Text("Region: ${order['region']}"),
+                      Text("Address: ${order['address']}"),
+                      Text("Phone: ${order['phone']}"),
+                      Text("City: ${order['city']}"),
+                      const SizedBox(height: 10),
+
+                      if (items.isNotEmpty) ...[
+                        const Text("Items:", style: TextStyle(fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 5),
+                        ...items.map((item) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 2),
+                            child: Text("- ${item['name']} x${item['quantity']} @ ₱${item['price']}"),
+                          );
+                        }).toList(),
+                        const SizedBox(height: 10),
+                      ],
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          CustomButton("Remove", AppColors.red, () {
+                            onRemove(docId);
+                          }),
+                          CustomButton("Update", AppColors.pink, () {
+                            onUpdate(docId);
+                          }),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
     );
   }
 }

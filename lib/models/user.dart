@@ -5,11 +5,13 @@ class User {
   final String email;
   final String password;
   final int phoneNumber;
+  final bool isGuest;
 
   User({
     required this.fullName,
     required this.email,
     required this.password,
     required this.phoneNumber,
+    this.isGuest = false,
   }) : id = 'user_${_counter++}';
 }
