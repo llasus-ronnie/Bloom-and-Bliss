@@ -126,17 +126,19 @@ class _DrwListViewState extends State<DrwListView> {
                     leading: const Icon(Icons.home, color: AppColors.pink),
                     onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const MyApp())),
                   ),
+                  ListTile(
+                    title: const Text("Our Flowers", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
+                    leading: const Icon(Icons.local_florist, color: AppColors.pink),
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => DetailsPage(user: widget.user))),
+                  ),
+
                   if (isGuest)
                     ListTile(
                       title: const Text("Sign In", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
                       leading: const Icon(Icons.login, color: AppColors.pink),
                       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const SignInPage())),
                     ),
-                  ListTile(
-                    title: const Text("Our Flowers", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
-                    leading: const Icon(Icons.local_florist, color: AppColors.pink),
-                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => DetailsPage(user: widget.user))),
-                  ),
+
                   if (!isGuest)
                     ListTile(
                       title: const Text("Shop Catalogue", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
