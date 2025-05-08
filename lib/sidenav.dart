@@ -65,7 +65,7 @@ class _DrwHeaderState extends State<DrwHeader> {
                 MaterialPageRoute(builder: (context) => ProfilePage(user: widget.user)),
               );
             }
-                : null, // disables tap if guest
+                : null,
             child: Align(
               alignment: Alignment.center,
               child: Column(
@@ -104,71 +104,90 @@ class DrwListView extends StatefulWidget {
 }
 
 class _DrwListViewState extends State<DrwListView> {
+  bool _isLoggingOut = false;
+
   bool get isGuest => widget.user.fullName.isEmpty;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.all(10),
-      child: Column(
-        children: [
-          ListTile(
-            title: Text("Home", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
-            leading: Icon(Icons.home, color: AppColors.pink),
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const MyApp())),
-          ),
+    return Stack(
+      children: [
+        AnimatedOpacity(
+          opacity: _isLoggingOut ? 0.5 : 1.0,
+          duration: const Duration(milliseconds: 300),
+          child: IgnorePointer(
+            ignoring: _isLoggingOut,
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                children: [
+                  ListTile(
+                    title: const Text("Home", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
+                    leading: const Icon(Icons.home, color: AppColors.pink),
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const MyApp())),
+                  ),
+                  if (isGuest)
+                    ListTile(
+                      title: const Text("Sign In", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
+                      leading: const Icon(Icons.login, color: AppColors.pink),
+                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const SignInPage())),
+                    ),
+                  ListTile(
+                    title: const Text("Our Flowers", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
+                    leading: const Icon(Icons.local_florist, color: AppColors.pink),
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => DetailsPage(user: widget.user))),
+                  ),
+                  if (!isGuest)
+                    ListTile(
+                      title: const Text("Shop Catalogue", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
+                      leading: const Icon(Icons.apps, color: AppColors.pink),
+                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => CataloguePage(user: widget.user))),
+                    ),
+                  if (!isGuest)
+                    ListTile(
+                      title: const Text("Your Cart", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
+                      leading: const Icon(Icons.shopping_cart, color: AppColors.pink),
+                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => CartPage(user: widget.user))),
+                    ),
+                  const Spacer(),
+                  if (!isGuest)
+                    ListTile(
+                      title: const Text("Logout", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
+                      leading: const Icon(Icons.logout, color: AppColors.pink),
+                      onTap: () async {
+                        setState(() {
+                          _isLoggingOut = true;
+                        });
 
-          // Only show Sign In and Sign Up if guest
-          if (isGuest) ...[
-            ListTile(
-              title: Text("Sign In", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
-              leading: Icon(Icons.login, color: AppColors.pink),
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const SignInPage())),
-            ),
-          ],
+                        await firebase_auth.FirebaseAuth.instance.signOut();
 
-          // Only show Cart if logged in
-          if (!isGuest)
-            ListTile(
-              title: Text("Your Cart", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
-              leading: Icon(Icons.shopping_cart, color: AppColors.pink),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => CartPage(user: widget.user)),
+                        if (mounted) {
+                          Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(builder: (context) => const MyApp()),
+                          );
+                        }
+                      },
+                    ),
+                ],
               ),
             ),
-
-          ListTile(
-            title: Text("Our Flowers", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
-            leading: Icon(Icons.local_florist, color: AppColors.pink),
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => DetailsPage(user: widget.user))),
           ),
-          ListTile(
-            title: Text("Shop Catalogue", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
-            leading: Icon(Icons.apps, color: AppColors.pink),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => CataloguePage(user: widget.user)),
+        ),
+        if (_isLoggingOut)
+          const Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(color: AppColors.pink),
+                SizedBox(height: 10),
+                Text(
+                  'Logging out, please wait...',
+                  style: TextStyle(fontFamily: 'PTSerif', color: AppColors.black),
+                ),
+              ],
             ),
           ),
-
-          const Spacer(),
-
-          // Only show Logout if user is logged in
-          if (!isGuest)
-            ListTile(
-              title: Text("Logout", style: TextStyle(color: AppColors.black, fontFamily: 'PTSerif')),
-              leading: Icon(Icons.logout, color: AppColors.pink),
-              onTap: () async {
-                await firebase_auth.FirebaseAuth.instance.signOut();
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => const MyApp()),
-                );
-              },
-            ),
-        ],
-      ),
+      ],
     );
   }
 }
-
