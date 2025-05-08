@@ -174,7 +174,7 @@ class _SignUpFormState extends State<SignUpForm> with SingleTickerProviderStateM
                     children: [
                       Expanded(
                         child: ElevatedButton(
-                          onPressed: () => Navigator.pop(context),
+                          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const MyApp())),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.grey[400],
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),

@@ -20,7 +20,6 @@ class CataloguePage extends StatelessWidget {
   final User user;
   const CataloguePage({super.key, required this.user});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     const String apptitle = "Bloom & Bliss - Catalogue";
@@ -130,12 +129,9 @@ class FlowerGrid extends StatelessWidget {
           (index) {
         return Product(
           id: 'product$index',
-          // Simple unique ID like 'product0', 'product1', etc.
           name: flowers[index]["title"],
-          // Product name (title)
           price: flowers[index]["price"],
-          // Price as a double
-          imageUrl: flowers[index]["image"], // Pass the imageUrl here
+          imageUrl: flowers[index]["image"],
         );
       },
     );
@@ -152,7 +148,7 @@ class FlowerGrid extends StatelessWidget {
           crossAxisCount: 2,
           crossAxisSpacing: 10,
           mainAxisSpacing: 10,
-          childAspectRatio: 0.7, // Adjusted to keep proportions right
+          childAspectRatio: 0.7,
         ),
         itemBuilder: (context, index) {
           final product = products[index];
@@ -176,8 +172,6 @@ class FlowerGrid extends StatelessWidget {
                     fit: BoxFit.cover,
                   ),
                 ),
-
-                // Spacing between image and content
                 SizedBox(height: 10),
 
                 // Content (title, rating, price, button)
@@ -227,7 +221,7 @@ class FlowerGrid extends StatelessWidget {
                           ),
                         ),
 
-                        Spacer(), // Pushes the button to the bottom
+                        Spacer(),
 
                         // Add to Cart Button
                         SizedBox(
@@ -247,7 +241,7 @@ class FlowerGrid extends StatelessWidget {
                             ),
                           ),
                         ),
-                        SizedBox(height: 5), // Space under the button
+                        SizedBox(height: 5),
                       ],
                     ),
                   ),

@@ -71,9 +71,9 @@ class TextTitleSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 10),
+      padding: EdgeInsets.symmetric(vertical: 8),
       child: Text(
-        "Your Cart Page",
+        "Your Cart",
         style: TextStyle(
           fontFamily: 'Recoleta',
           fontSize: 36,
@@ -91,27 +91,21 @@ class CartSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Create the Cart object using the User
     final cart = Cart(user: user);
-
-    // Now pass the Cart object to the CartController
     final cartController = CartController(cart, user);
 
     return StreamBuilder<List<CartItem>>(
       stream: cartController.getCartItems(), // Stream from Firestore
       builder: (context, snapshot) {
-        // Check the connection state first
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
         }
 
-        // Check for errors in the snapshot
         if (snapshot.hasError) {
           print('Error: ${snapshot.error}');
           return Center(child: Text('Error: ${snapshot.error}'));
         }
 
-        // Check if data is null or empty
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return Center(child: Text('Your cart is empty 🥀',
             style: TextStyle(
@@ -121,24 +115,41 @@ class CartSection extends StatelessWidget {
           ),));
         }
 
-        // Ensure the data is not null before using it
         var cartItems = snapshot.data!;
 
-        // Display the cart items
-        return LayoutBuilder(
-          builder: (context, constraints) {
-            return Wrap(
-              spacing: 20,
-              runSpacing: 20,
-              alignment: WrapAlignment.center,
-              children: cartItems.map((cartItem) {
-                return CartItemWidget(
-                    cartItem: cartItem,
-                    cartController: cartController,
+        double totalPrice = cartItems.fold(
+          0.0,
+              (sum, item) => sum + (item.product.price * item.quantity),
+        );
+
+        return Column(
+          children: [
+            LayoutBuilder(
+              builder: (context, constraints) {
+                return Wrap(
+                  spacing: 20,
+                  runSpacing: 20,
+                  alignment: WrapAlignment.center,
+                  children: cartItems.map((cartItem) {
+                    return CartItemWidget(
+                      cartItem: cartItem,
+                      cartController: cartController,
+                    );
+                  }).toList(),
                 );
-              }).toList(),
-            );
-          },
+              },
+            ),
+            SizedBox(height: 30),
+            Divider(thickness: 1),
+            Text(
+              "Total: ₱${totalPrice.toStringAsFixed(2)}",
+              style: TextStyle(
+                fontFamily: 'Recoleta',
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
         );
       },
     );
@@ -190,7 +201,7 @@ class CartItemWidget extends StatelessWidget {
               ),
             ),
 
-            // Quantity controls
+            // Quantity
             Expanded(
               flex: 2,
               child: Row(
@@ -242,11 +253,11 @@ class CartItemWidget extends StatelessWidget {
 
 
 class InputSection extends StatefulWidget {
-  final User user;  // Add this property
+  final User user;
 
   const InputSection({
     super.key,
-    required this.user  // Make it required
+    required this.user
   });
 
   @override
@@ -273,7 +284,6 @@ class _InputSectionState extends State<InputSection> {
   }
 
   void placeOrder() async {
-    // 1. First validate all input fields
     if ([
       addressController.text,
       nameController.text,
@@ -294,7 +304,6 @@ class _InputSectionState extends State<InputSection> {
       return;
     }
 
-    // 2. Prepare order data (but don't send yet)
     final cart = Cart(user: widget.user);
     final cartController = CartController(cart, widget.user);
     final cartItems = await cartController.getCartItems().first;
@@ -322,7 +331,6 @@ class _InputSectionState extends State<InputSection> {
       'userId': widget.user.id,
     };
 
-    // 3. Show confirmation dialog
     bool? shouldProceed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -361,7 +369,6 @@ class _InputSectionState extends State<InputSection> {
 
     if (shouldProceed == true) {
       try {
-        // Show loading indicator
         showDialog(
           context: context,
           barrierDismissible: false,
@@ -421,7 +428,7 @@ class _InputSectionState extends State<InputSection> {
           },
         );
       } catch (e) {
-        Navigator.of(context, rootNavigator: true).pop(); // Ensure spinner closes
+        Navigator.of(context, rootNavigator: true).pop();
         showError("Failed to place order: $e");
       }
     }
@@ -697,17 +704,17 @@ class CustomButton extends StatelessWidget {
         backgroundColor: color,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         padding: EdgeInsets.symmetric(
-            horizontal: 24, vertical: 16), // keep consistent size
+            horizontal: 24, vertical: 16),
       ),
       child: SizedBox(
-        width: 110, // fixed width to prevent wrapping
+        width: 110,
         child: Text(
           text,
           textAlign: TextAlign.center,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
             fontFamily: 'Recoleta',
-            fontSize: 14, // reduced font size
+            fontSize: 14,
             fontWeight: FontWeight.w600,
             color: Colors.white,
           ),
